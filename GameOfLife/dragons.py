@@ -1,11 +1,12 @@
 from tkinter import *
 
 class Dragons:
+    """The main application class for The Game of Life."""
     root = Tk()
     lobby = Frame(root, bg="#F0F0F0")
 
     def __init__(self):
-        """Initialize the Dragons class and configure the main window and frames."""
+        """Initialize the Dragons class and configure the main application window."""
         self.root = self.__class__.root
         self.config_root()
         self.lobby = self.__class__.lobby
@@ -18,25 +19,25 @@ class Dragons:
         self.app_loop()
 
     def config_root(self):
-        """Configure the main window properties."""
+        """Configure the main application window."""
         self.root.title("The Game of Life")
         self.root.geometry("900x600")
         self.root.resizable(False, False)
         self.root.configure(bg="#F0F0F0")
 
     def frames_config(self):
-        """Configure the layout of the frames."""
+        """Configure the layout of the frames in the application."""
         for frame in (self.lobby, self.settings, self.game, self.rules):
             frame.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
     def app_loop(self):
-        """Start the Tkinter main loop."""
+        """Start the main application loop."""
         self.root.mainloop()
 
     def lobby_page(self):
-        """Create and display the lobby page."""
+        """Set up the lobby page with buttons to navigate to other pages."""
         title = Label(self.lobby, text="The Game of Life", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
         title.pack(pady=(30, 10))
 
@@ -56,7 +57,7 @@ class Dragons:
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
     def setting_page(self):
-        """Create and display the settings page."""
+        """Set up the settings page with options to configure the game grid."""
         title = Label(self.settings, text="Settings", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
         title.pack(pady=(30, 10))
 
@@ -76,9 +77,9 @@ class Dragons:
 
         return_button = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
         return_button.pack(pady=10)
-    
+
     def rules_page(self):
-        """Create and display the rules page."""
+        """Set up the rules page with a description of the game rules."""
         title = Label(self.rules, text="Game Rules", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
         title.pack(pady=(30, 10))
 
@@ -99,7 +100,7 @@ class Dragons:
         return_button.pack(pady=10)
 
     def apply_settings(self):
-        """Apply the settings from the settings page and start the game automatically."""
+        """Apply the settings for the game grid and start the game."""
         try:
             rows = int(self.rows_entry.get())
             cols = int(self.cols_entry.get())
@@ -110,7 +111,7 @@ class Dragons:
             pass
 
     def game_page(self, rows=20, cols=20):
-        """Create or update the game grid and switch to the game page."""
+        """Set up the game page with the specified grid size."""
         if self.current_game is None:
             from gameOfLife import GameOfLife
             self.current_game = GameOfLife(self.game, rows, cols)
@@ -123,11 +124,11 @@ class Dragons:
         frame.tkraise()
 
     def start_game(self):
-        """Start the game by creating the game grid."""
+        """Start the game by setting up the game page."""
         self.game_page()
 
     def run(self):
-        """Initialize and display all pages, then switch to the lobby page."""
+        """Run the application by setting up all pages and showing the lobby page."""
         self.lobby_page()
         self.setting_page()
         self.rules_page()

@@ -2,8 +2,10 @@ from tkinter import *
 from tkinter import ttk
 import random
 
-
 class GameOfLife:
+    """
+    The Game of Life class that implements the Game of Life simulation.
+    """
     def __init__(self, frame, rows=20, cols=20, cell_size=20):
         """
         Initialize the Game of Life with a given frame, number of rows, columns, and cell size.
@@ -19,83 +21,133 @@ class GameOfLife:
 
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
-        
-        self.speed = 300
-        self.speed_scale = Scale(frame, from_=600, to=10, orient=HORIZONTAL, label="   speed the game", font=("Arial", 12, "bold"), length=200, bg="#F0F0F0")
-        self.speed_scale.set(self.speed)
-        self.speed_scale.pack(pady=10)
+
+        self.canvas.bind("<Button-1>", self.toggle_cell)
+
+        self.slider_frame = Frame(frame, bg="#F0F0F0")
+        self.slider_frame.pack(pady=10)
+
+        self.speed_scale = Scale(self.slider_frame, from_=500, to=10, orient=HORIZONTAL, label="Speed (ms)", font=("Arial", 12, "bold"), length=200, bg="#F0F0F0")
+        self.speed_scale.set(250)
+        self.speed_scale.pack(side='left', padx=5)
+
+        self.zoom_scale = Scale(self.slider_frame, from_=10, to=50, orient=HORIZONTAL, label="Zoom", font=("Arial", 12, "bold"), length=200, command=self.zoom_grid)
+        self.zoom_scale.set(self.cell_size)
+        self.zoom_scale.pack(side='left', padx=5)
+
+        self.color_frame = Frame(frame, bg="#F0F0F0")
+        self.color_frame.pack(pady=10)
 
         self.color_list = ['black', 'red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink']
         self.alive_color = 'black'
         self.dead_color = 'white'
 
-        self.alive_color_combobox = ttk.Combobox(frame, values=self.color_list, state='readonly', width=12)
+        self.alive_color_combobox = ttk.Combobox(self.color_frame, values=self.color_list, state='readonly', width=12)
         self.alive_color_combobox.set(self.alive_color)
-        self.alive_color_combobox.pack(side='left', padx=5)
+        self.alive_color_combobox.bind("<<ComboboxSelected>>", self.update_alive_color)
+        self.alive_color_combobox.grid(row=0, column=0, padx=5)
 
-        self.dead_color_combobox = ttk.Combobox(frame, values=self.color_list, state='readonly', width=12)
+        self.dead_color_combobox = ttk.Combobox(self.color_frame, values=self.color_list, state='readonly', width=12)
         self.dead_color_combobox.set(self.dead_color)
-        self.dead_color_combobox.pack(side='left', padx=5)
+        self.dead_color_combobox.bind("<<ComboboxSelected>>", self.update_dead_color)
+        self.dead_color_combobox.grid(row=0, column=1, padx=5)
 
-        color_button = Button(frame, text='Set Colors', command=self.set_colors, font=("Arial", 14), bg="#FFC107", fg="white", relief=FLAT)
-        color_button.pack(side='left', padx=5)
+        self.start_button = Button(self.color_frame, text="Start", command=self.start_game, bg="#4CAF50", fg="white", relief=FLAT)
+        self.start_button.grid(row=0, column=2, padx=5)
 
-        button_frame = Frame(frame, bg='white')
-        button_frame.pack(side='bottom', pady=10)
+        self.stop_button = Button(self.color_frame, text="Stop", command=self.stop_game, bg="#F44336", fg="white", relief=FLAT)
+        self.stop_button.grid(row=0, column=3, padx=5)
 
-        self.start_button = Button(button_frame, text='Start', command=self.start_game, font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
-        self.start_button.grid(row=0, column=0, padx=5)
+        self.clear_button = Button(self.color_frame, text="Clear", command=self.clear_grid, bg="#FF9800", fg="white", relief=FLAT)
+        self.clear_button.grid(row=0, column=4, padx=5)
 
-        self.stop_button = Button(button_frame, text='Stop', command=self.stop_game, font=("Arial", 14), bg="#F44336", fg="white", relief=FLAT)
-        self.stop_button.grid(row=0, column=1, padx=5)
-
-        self.reset_button = Button(button_frame, text='Reset', command=self.reset_game, font=("Arial", 14), bg="#FF9800", fg="white", relief=FLAT)
-        self.reset_button.grid(row=0, column=2, padx=5)
-
-        self.randomize_button = Button(button_frame, text='Randomize', command=self.randomize_grid, font=("Arial", 14), bg="#2196F3", fg="white", relief=FLAT)
-        self.randomize_button.grid(row=0, column=3, padx=5)
-
+        self.randomize_button = Button(self.color_frame, text="Randomize", command=self.randomize_grid, bg="#58CBFC", fg="white", relief=FLAT)
+        self.randomize_button.grid(row=0, column=5, padx=5)
         from dragons import Dragons
-        self.lobby_button = Button(button_frame, text='Lobby', command=lambda: Dragons.lobby.tkraise(), font=("Arial", 14), bg="#FF5722", fg="white", relief=FLAT)
-        self.lobby_button.grid(row=0, column=4, padx=5)
-
-        self.canvas.bind("<Button-1>", self.toggle_cell)
+        self.lobby_button = Button(self.color_frame, text="lobby", command=Dragons.lobby.tkraise, bg="#58FCC2", fg="white", relief=FLAT)
+        self.lobby_button.grid(row=0, column=6, padx=5)
 
         self.draw_grid()
-
-    def set_colors(self):
-        """
-        Set the colors for alive and dead cells based on the combobox selections.
-        """
-        self.alive_color = self.alive_color_combobox.get()
-        self.dead_color = self.dead_color_combobox.get()
-        self.draw_grid()
+        self.update_canvas()
 
     def toggle_cell(self, event):
         """
         Toggle the state of a cell between alive and dead when clicked.
         """
-        col = event.x // self.cell_size
-        row = event.y // self.cell_size
+        x, y = event.x, event.y
+        row = y // self.cell_size
+        col = x // self.cell_size
         if 0 <= row < self.rows and 0 <= col < self.cols:
-            self.grid[row][col] = 1 - self.grid[row][col]
-            self.draw_grid()
+            self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
+            self.update_canvas()
 
-    def randomize_grid(self):
+    def draw_grid(self):
         """
-        Randomize the grid with alive and dead cells.
+        Draw the grid on the canvas with the current state of each cell.
         """
-        for r in range(self.rows):
-            for c in range(self.cols):
-                self.grid[r][c] = random.choice([0, 1])
+        for i in range(self.rows):
+            for j in range(self.cols):
+                color = self.alive_color if self.grid[i][j] == 1 else self.dead_color
+                self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
+                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
+                                              fill=color, outline="#ccc")
+
+    def update_canvas(self):
+        """
+        Update the canvas by redrawing the grid.
+        """
+        self.canvas.delete("all")
         self.draw_grid()
+
+    def update_grid(self, rows, cols):
+        """
+        Update the grid dimensions and reset the grid with random values.
+        """
+        self.rows = rows
+        self.cols = cols
+        self.cell_size = self.zoom_scale.get()
+        self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
+        self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
+        self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
+        self.update_canvas()
+
+    def zoom_grid(self, value):
+        """
+        Zoom the grid by adjusting the cell size.
+        """
+        self.cell_size = int(value)
+        self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
+        self.update_canvas()
+
+    def update_alive_color(self, event):
+        """
+        Update the color used for alive cells.
+        """
+        self.alive_color = self.alive_color_combobox.get()
+        self.update_canvas()
+
+    def update_dead_color(self, event):
+        """
+        Update the color used for dead cells.
+        """
+        self.dead_color = self.dead_color_combobox.get()
+        self.update_canvas()
 
     def start_game(self):
         """
         Start the Game of Life simulation.
         """
         self.is_running = True
-        self.update_grid()
+        self.run_game()
+
+    def run_game(self):
+        """
+        Run the Game of Life simulation by updating cells and redrawing the grid.
+        """
+        if self.is_running:
+            self.update_cells()
+            self.update_canvas()
+            self.frame.after(self.speed_scale.get(), self.run_game)
 
     def stop_game(self):
         """
@@ -103,50 +155,41 @@ class GameOfLife:
         """
         self.is_running = False
 
-    def reset_game(self):
+    def clear_grid(self):
         """
-        Reset the grid to all dead cells.
+        Clear the grid by setting all cells to dead.
         """
         self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
-        self.draw_grid()
+        self.update_canvas()
 
-    def draw_grid(self):
+    def randomize_grid(self):
         """
-        Draw the grid on the canvas.
+        Randomize the grid by setting each cell to a random state.
         """
-        self.canvas.delete("all")
-        for r in range(self.rows):
-            for c in range(self.cols):
-                color = self.alive_color if self.grid[r][c] == 1 else self.dead_color
-                self.canvas.create_rectangle(c * self.cell_size, r * self.cell_size, (c + 1) * self.cell_size, (r + 1) * self.cell_size, fill=color, outline="#ccc")
+        self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
+        self.update_canvas()
 
-    def update_grid(self, rows=None, cols=None):
+    def update_cells(self):
         """
-        Update the grid based on the rules of the Game of Life.
+        Update the state of each cell based on the Game of Life rules.
         """
-        if rows is not None and cols is not None:
-            self.rows, self.cols = rows, cols
-            self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
-            self.canvas.config(width=cols * self.cell_size, height=rows * self.cell_size)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                live_neighbors = self.count_live_neighbors(i, j)
+                if self.grid[i][j] == 1:
+                    self.temp_grid[i][j] = 1 if live_neighbors in (2, 3) else 0
+                else:
+                    self.temp_grid[i][j] = 1 if live_neighbors == 3 else 0
+        self.grid, self.temp_grid = self.temp_grid, self.grid
 
-        if self.is_running:
-            self.temp_grid = [[self.calculate_next_state(r, c) for c in range(self.cols)] for r in range(self.rows)]
-            self.grid = [row[:] for row in self.temp_grid]
-            self.draw_grid()
-            self.frame.after(self.speed_scale.get(), self.update_grid)
-
-    def calculate_next_state(self, row, col):
+    def count_live_neighbors(self, row, col):
         """
-        Calculate the next state of a cell based on its neighbors.
+        Count the number of live neighbors for a given cell.
         """
-        neighbors = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-        live_neighbors = 0
-        for neighbor in neighbors:
-            n_row, n_col = row + neighbor[0], col + neighbor[1]
-            if 0 <= n_row < self.rows and 0 <= n_col < self.cols:
-                live_neighbors += self.grid[n_row][n_col]
-
-        if self.grid[row][col] == 1:
-            return 1 if live_neighbors in (2, 3) else 0
-        else:
-            return 1 if live_neighbors == 3 else 0
+        count = 0
+        for i in range(row - 1, row + 2):
+            for j in range(col - 1, col + 2):
+                if (i == row and j == col) or i < 0 or i >= self.rows or j < 0 or j >= self.cols:
+                    continue
+                count += self.grid[i][j]
+        return count
