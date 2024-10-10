@@ -20,8 +20,8 @@ class GameOfLife:
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         
-        self.speed = 500
-        self.speed_scale = Scale(frame, from_=1000, to=50, orient=HORIZONTAL, label="   speed the game", font=("Arial", 12, "bold"), length=200, bg="#F0F0F0")
+        self.speed = 300
+        self.speed_scale = Scale(frame, from_=600, to=10, orient=HORIZONTAL, label="   speed the game", font=("Arial", 12, "bold"), length=200, bg="#F0F0F0")
         self.speed_scale.set(self.speed)
         self.speed_scale.pack(pady=10)
 
