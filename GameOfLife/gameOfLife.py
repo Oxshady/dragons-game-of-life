@@ -12,6 +12,7 @@ class GameOfLife:
 
         self.canvas = Canvas(frame, width=cols * cell_size, height=rows * cell_size, bg='white', highlightbackground="#ccc")
         self.canvas.pack(pady=20)
+
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.color_list = ['black', 'red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink']
@@ -43,98 +44,93 @@ class GameOfLife:
 
         self.randomize_button = Button(button_frame, text='Randomize', command=self.randomize_grid, font=("Arial", 14), bg="#2196F3", fg="white", relief=FLAT)
         self.randomize_button.pack(side='left', padx=5)
+        from dragons import Dragons
+        self.lobby_button = Button(button_frame, text='Lobby', command=lambda: Dragons.lobby.tkraise(), font=("Arial", 14), bg="#FF5722", fg="white", relief=FLAT)
+        self.lobby_button.pack(side='left', padx=5)
+
+        self.canvas.bind("<Button-1>", self.toggle_cell)
 
         self.draw_grid()
 
-        self.canvas.bind('<Button-1>', self.toggle_cell)
-
     def set_colors(self):
-        """Set the colors for alive and dead cells based on user selection."""
         self.alive_color = self.alive_color_combobox.get()
         self.dead_color = self.dead_color_combobox.get()
         self.draw_grid()
 
-    def draw_grid(self):
-        """Draw the grid on the canvas based on the current state."""
-        self.canvas.delete('all')
+    def toggle_cell(self, event):
+        col = event.x // self.cell_size
+        row = event.y // self.cell_size
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            self.grid[row][col] = 1 - self.grid[row][col]
+            self.draw_grid()
+
+    def randomize_grid(self):
         for row in range(self.rows):
             for col in range(self.cols):
+                self.grid[row][col] = random.choice([0, 1])
+        self.draw_grid()
+
+    def draw_grid(self):
+        self.canvas.delete("all")
+        for row in range(self.rows):
+            for col in range(self.cols):
+                color = self.alive_color if self.grid[row][col] == 1 else self.dead_color
                 x1 = col * self.cell_size
                 y1 = row * self.cell_size
                 x2 = x1 + self.cell_size
                 y2 = y1 + self.cell_size
-                color = self.alive_color if self.grid[row][col] == 1 else self.dead_color
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='gray')
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="#ccc")
 
-    def toggle_cell(self, event):
-        """Toggle the cell state between alive (1) and dead (0) when clicked."""
-        col = event.x // self.cell_size
-        row = event.y // self.cell_size
-        if 0 <= col < self.cols and 0 <= row < self.rows:
-            self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
-        self.draw_grid()
-
-    def start_game(self):
-        """Start the game loop."""
-        if not self.is_running:
-            self.is_running = True
-            self.run_game()
-
-    def stop_game(self):
-        """Stop the game loop."""
-        self.is_running = False
-
-    def reset_game(self):
-        """Reset the grid to all dead cells."""
-        self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
-        self.draw_grid()
-
-    def randomize_grid(self):
-        """Randomize the grid with alive and dead cells."""
-        self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
-        self.draw_grid()
-
-    def run_game(self):
-        """Run the game's logic, updating the grid."""
+    def update(self):
         if not self.is_running:
             return
-        
-        self.update_grid_logic()
-        self.draw_grid()
-        self.frame.after(100, self.run_game)
-
-    def update_grid_logic(self):
-        """Update the grid logic according to Conway's rules."""
         for row in range(self.rows):
             for col in range(self.cols):
-                alive_neighbors = self.count_alive_neighbors(row, col)
+                live_neighbors = self.get_live_neighbors(row, col)
                 if self.grid[row][col] == 1:
-                    if alive_neighbors < 2 or alive_neighbors > 3:
+                    if live_neighbors < 2 or live_neighbors > 3:
                         self.temp_grid[row][col] = 0
                     else:
                         self.temp_grid[row][col] = 1
                 else:
-                    if alive_neighbors == 3:
+                    if live_neighbors == 3:
                         self.temp_grid[row][col] = 1
                     else:
                         self.temp_grid[row][col] = 0
 
         self.grid, self.temp_grid = self.temp_grid, self.grid
+        self.draw_grid()
+        self.frame.after(100, self.update)
 
-    def count_alive_neighbors(self, row, col):
-        """Count alive neighbors around the given cell."""
-        count = 0
+    def get_live_neighbors(self, row, col):
+        live_neighbors = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if i == 0 and j == 0:
                     continue
-                neighbor_row, neighbor_col = row + i, col + j
-                if 0 <= neighbor_row < self.rows and 0 <= neighbor_col < self.cols:
-                    count += self.grid[neighbor_row][neighbor_col]
-        return count
+                r = (row + i) % self.rows
+                c = (col + j) % self.cols
+                live_neighbors += self.grid[r][c]
+        return live_neighbors
+
+    def start_game(self):
+        self.is_running = True
+        self.update()
+
+    def stop_game(self):
+        self.is_running = False
+
+    def reset_game(self):
+        self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        self.temp_grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        self.draw_grid()
 
     def update_grid(self, rows, cols):
-        """Update the grid dimensions."""
         self.rows = rows
         self.cols = cols
-        self.reset_game()
+        self.grid = [[0 for _ in range(cols)] for _ in range(rows)]
+        self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
+
+        self.canvas.config(width=cols * self.cell_size, height=rows * self.cell_size)
+
+        self.draw_grid()
