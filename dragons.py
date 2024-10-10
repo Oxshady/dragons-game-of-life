@@ -3,46 +3,62 @@ from tkinter import ttk
 import random
 
 class Dragons:
+    """Main application class for the Game of Life."""
+    
     def __init__(self):
+        """Initialize the main application window and frames."""
         self.root = Tk()
         self.config_root()
         self.lobby = Frame(self.root, bg="#F0F0F0")
         self.settings = Frame(self.root, bg="#F0F0F0")
         self.game = Frame(self.root, bg="#F0F0F0")
         self.frames_config()
+        self.game_of_life = None
         self.run()
         self.app_loop()
 
     def config_root(self):
+        """Configure the main window properties."""
         self.root.title("The Game of Life")
         self.root.geometry("800x600")
         self.root.resizable(False, False)
-        self.root.configure(bg="#F0F0F0")
+        self.root.configure(bg="#F0F0F0") 
 
     def frames_config(self):
+        """Configure the layout of the frames."""
         for frame in (self.lobby, self.settings, self.game):
             frame.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
     def app_loop(self):
+        """Start the main event loop for the application."""
         self.root.mainloop()
 
     def lobby_page(self):
+        """Create the lobby page with start and settings buttons."""
         title = Label(self.lobby, text="The Game of Life", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
         title.pack(pady=(30, 10))
 
-        start_button = Button(self.lobby, text="Start Game", font=("Arial", 16), command=lambda: self.switch_frames(self.game), bg="#4CAF50", fg="white", relief=FLAT)
+        start_button = Button(self.lobby, text="Start Game", font=("Arial", 16), 
+                              command=lambda: self.switch_frames(self.game), bg="#4CAF50", 
+                              fg="white", relief=FLAT)
         start_button.pack(pady=10, padx=20, fill=X)
 
-        setting_button = Button(self.lobby, text="Settings", font=("Arial", 16), command=lambda: self.switch_frames(self.settings), bg="#2196F3", fg="white", relief=FLAT)
+        setting_button = Button(self.lobby, text="Settings", font=("Arial", 16), 
+                                command=lambda: self.switch_frames(self.settings), 
+                                bg="#2196F3", fg="white", relief=FLAT)
         setting_button.pack(pady=10, padx=20, fill=X)
 
     def setting_page(self):
+        """Create the settings page for adjusting game parameters."""
         title = Label(self.settings, text="Settings", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
         title.pack(pady=(30, 10))
 
-        return_button = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
+        return_button = Button(
+          self.settings, text="Lobby", font=("Arial", 16), 
+                              command=lambda: self.switch_frames(self.lobby), 
+                              bg="#FF5722", fg="white", relief=FLAT)
         return_button.pack(pady=10, padx=20, fill=X)
 
         entry_frame = Frame(self.settings, bg="#F0F0F0")
@@ -56,10 +72,13 @@ class Dragons:
         self.cols_entry.insert(0, "20")
         self.cols_entry.grid(row=0, column=1, padx=5)
 
-        apply_button = Button(self.settings, text="Apply", font=("Arial", 14), command=self.apply_settings, bg="#4CAF50", fg="white", relief=FLAT)
+        apply_button = Button(self.settings, text="Apply", font=("Arial", 14), 
+                              command=self.apply_settings, bg="#4CAF50", 
+                              fg="white", relief=FLAT)
         apply_button.pack(pady=10)
 
     def apply_settings(self):
+        """Apply the settings for rows and columns and start the game."""
         try:
             rows = int(self.rows_entry.get())
             cols = int(self.cols_entry.get())
@@ -68,28 +87,39 @@ class Dragons:
             pass
 
     def game_page(self, rows=20, cols=20):
-        self.game_of_life = GameOfLife(self.game, rows, cols)
+        """Setup the game page with the specified number of rows and columns."""
+        if self.game_of_life:
+            self.game_of_life.reset_game()
+        else:
+            self.game_of_life = GameOfLife(self.game, rows, cols)
         self.switch_frames(self.game)
 
     def switch_frames(self, frame):
+        """Switch the currently displayed frame."""
         frame.tkraise()
 
     def run(self):
+        """Initialize the lobby and settings pages."""
         self.lobby_page()
         self.setting_page()
-        self.game_page()
         self.switch_frames(self.lobby)
 
 class GameOfLife:
+    """Class representing the Game of Life logic and display."""
+
     def __init__(self, frame, rows=20, cols=20, cell_size=20):
+        """Initialize the Game of Life grid and UI elements."""
         self.frame = frame
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
         self.is_running = False
 
-        self.canvas = Canvas(frame, width=cols * cell_size, height=rows * cell_size, bg='white', highlightbackground="#ccc")
+        self.canvas = Canvas(
+          frame, width=cols * cell_size, height=rows * cell_size, 
+                            bg='white', highlightbackground="#ccc")
         self.canvas.pack(pady=20)
+
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.color_list = ['black', 'red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink']
@@ -104,26 +134,35 @@ class GameOfLife:
         self.dead_color_combobox.set(self.dead_color)
         self.dead_color_combobox.pack(side='left', padx=5)
 
-        color_button = Button(frame, text='Set Colors', command=self.set_colors, font=("Arial", 14), bg="#FFC107", fg="white", relief=FLAT)
+        color_button = Button(
+          frame, text='Set Colors', command=self.set_colors, 
+                              font=("Arial", 14), bg="#FFC107", fg="white", relief=FLAT)
         color_button.pack(side='left', padx=5)
 
         button_frame = Frame(frame, bg='white')
         button_frame.pack(side='bottom', pady=10)
 
-        self.start_button = Button(button_frame, text='Start', command=self.start_game, font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
+        self.start_button = Button(
+          button_frame, text='Start', command=self.start_game, 
+                                  font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
         self.start_button.pack(side='left', padx=5)
 
-        self.stop_button = Button(button_frame, text='Stop', command=self.stop_game, font=("Arial", 14), bg="#F44336", fg="white", relief=FLAT)
+        self.stop_button = Button(
+          button_frame, text='Stop', command=self.stop_game, 
+                                  font=("Arial", 14), bg="#F44336", fg="white", relief=FLAT)
         self.stop_button.pack(side='left', padx=5)
 
-        self.reset_button = Button(button_frame, text='Reset', command=self.reset_game, font=("Arial", 14), bg="#FF9800", fg="white", relief=FLAT)
+        self.reset_button = Button(
+          button_frame, text='Reset', command=self.reset_game, 
+                                  font=("Arial", 14), bg="#FF9800", fg="white", relief=FLAT)
         self.reset_button.pack(side='left', padx=5)
 
-        self.randomize_button = Button(button_frame, text='Randomize', command=self.randomize_grid, font=("Arial", 14), bg="#2196F3", fg="white", relief=FLAT)
+        self.randomize_button = Button(
+          button_frame, text='Randomize', command=self.randomize_grid, 
+                                      font=("Arial", 14), bg="#2196F3", fg="white", relief=FLAT)
         self.randomize_button.pack(side='left', padx=5)
 
         self.draw_grid()
-
         self.canvas.bind('<Button-1>', self.toggle_cell)
 
     def set_colors(self):
@@ -163,28 +202,27 @@ class GameOfLife:
         self.is_running = False
 
     def reset_game(self):
-        """Reset the grid to all dead cells."""
-        self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        """Reset the game to its initial state."""
+        self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
         self.draw_grid()
 
     def randomize_grid(self):
-        """Randomize the grid with alive and dead cells."""
+        """Randomize the state of the grid."""
         self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
         self.draw_grid()
 
     def run_game(self):
-        """Run the game's logic, updating the grid for each step."""
+        """Update the grid state and redraw it."""
         if self.is_running:
             self.update_grid()
             self.draw_grid()
-            self.frame.after(200, self.run_game)
+            self.frame.after(100, self.run_game)
 
     def update_grid(self):
-        """Apply the rules of Conway's Game of Life to update the grid."""
+        """Update the grid according to the rules of Conway's Game of Life."""
         for row in range(self.rows):
             for col in range(self.cols):
                 alive_neighbors = self.count_alive_neighbors(row, col)
-
                 if self.grid[row][col] == 1:
                     if alive_neighbors < 2 or alive_neighbors > 3:
                         self.temp_grid[row][col] = 0
