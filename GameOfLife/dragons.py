@@ -45,7 +45,7 @@ class Dragons:
         rules_button.pack(pady=10, padx=20, fill=X)
 
         quit_button = Button(self.lobby, text="Quit", font=("Arial", 16), command=self.root.quit, bg="#F44336", fg="white", relief=FLAT)
-        quit_button.pack(pady=10, padx=20)
+        quit_button.pack(pady=10, padx=20, fill=X)
 
     def setting_page(self):
         title = Label(self.settings, text="Settings", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
