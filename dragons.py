@@ -41,23 +41,44 @@ class Dragons:
         start_button = Button(self.lobby, text="Start Game", font=("Helvetica", 16), command=lambda: self.switch_frames(self.game))
         start_button.grid(row=2, column=0, pady=10, padx=20)
 
-        setting_button = Button(self.lobby, text="Setting", font=("Helvetica", 16), command=lambda: self.switch_frames(self.settings))
+        setting_button = Button(self.lobby, text="Settings", font=("Helvetica", 16), command=lambda: self.switch_frames(self.settings))
         setting_button.grid(row=3, column=0, pady=10, padx=20)
 
     def setting_page(self):
         self.settings.grid_rowconfigure(0, weight=1)
         self.settings.grid_rowconfigure(1, weight=1)
         self.settings.grid_rowconfigure(2, weight=1)
+        self.settings.grid_rowconfigure(3, weight=1)
+        self.settings.grid_rowconfigure(4, weight=1)
         self.settings.grid_columnconfigure(0, weight=1)
 
         title = Label(self.settings, text="Settings", font=("Helvetica", 24, "bold"), bg="white")
         title.grid(row=1, column=0, pady=20, padx=20, sticky="n")
-
         return_button = Button(self.settings, text="Lobby", font=("Helvetica", 16), command=lambda: self.switch_frames(self.lobby))
         return_button.grid(row=2, column=0, pady=10, padx=20)
 
-    def game_page(self):
-        self.game_of_life = GameOfLife(self.game)
+        self.rows_entry = Entry(self.settings, width=5)
+        self.rows_entry.insert(0, "20")
+        self.rows_entry.grid(row=3, column=0, pady=5)
+
+        self.cols_entry = Entry(self.settings, width=5)
+        self.cols_entry.insert(0, "20")
+        self.cols_entry.grid(row=4, column=0, pady=5)
+
+        apply_button = Button(self.settings, text="Apply", command=self.apply_settings)
+        apply_button.grid(row=5, column=0, pady=10)
+
+    def apply_settings(self):
+        try:
+            rows = int(self.rows_entry.get())
+            cols = int(self.cols_entry.get())
+            self.game_page(rows, cols)
+        except ValueError:
+            pass
+
+    def game_page(self, rows=20, cols=20):
+        self.game_of_life = GameOfLife(self.game, rows, cols)
+        self.switch_frames(self.game)
 
     def switch_frames(self, frame):
         frame.tkraise()
@@ -70,11 +91,13 @@ class Dragons:
 
 
 class GameOfLife:
-    def __init__(self, frame, rows=20, cols=20, cell_size=20):
+    def __init__(self, frame, rows=20, cols=20, cell_size=20, alive_color='black', dead_color='white'):
         self.frame = frame
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
+        self.alive_color = alive_color
+        self.dead_color = dead_color
         self.is_running = False
 
         self.canvas = Canvas(frame, width=cols * cell_size, height=rows * cell_size, bg='white')
@@ -99,16 +122,33 @@ class GameOfLife:
         self.randomize_button = Button(frame, text='Randomize', command=self.randomize_grid)
         self.randomize_button.pack(side='left')
 
+        self.alive_color_entry = Entry(frame)
+        self.alive_color_entry.insert(0, 'black')
+        self.alive_color_entry.pack(side='left')
+
+        self.dead_color_entry = Entry(frame)
+        self.dead_color_entry.insert(0, 'white')
+        self.dead_color_entry.pack(side='left')
+
+        color_button = Button(frame, text='Set Colors', command=self.set_colors)
+        color_button.pack(side='left')
+
+    def set_colors(self):
+        """Set the colors for alive and dead cells based on user input."""
+        self.alive_color = self.alive_color_entry.get()
+        self.dead_color = self.dead_color_entry.get()
+        self.draw_grid()
+
     def draw_grid(self):
         """Draw the grid on the canvas based on the current state."""
-        self.canvas.delete('all')  # Clear the canvas
+        self.canvas.delete('all')
         for row in range(self.rows):
             for col in range(self.cols):
                 x1 = col * self.cell_size
                 y1 = row * self.cell_size
                 x2 = x1 + self.cell_size
                 y2 = y1 + self.cell_size
-                color = 'black' if self.grid[row][col] == 1 else 'white'
+                color = self.alive_color if self.grid[row][col] == 1 else self.dead_color
                 self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='gray')
 
     def toggle_cell(self, event):
@@ -177,4 +217,3 @@ class GameOfLife:
 
 if __name__ == "__main__":
     x = Dragons()
-
