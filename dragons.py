@@ -177,3 +177,4 @@ class GameOfLife:
 
 if __name__ == "__main__":
     x = Dragons()
+
