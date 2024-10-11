@@ -1,12 +1,16 @@
 from tkinter import *
+import pygame
 
 class Dragons:
     """The main application class for The Game of Life."""
     root = Tk()
+    is_muted = False
     lobby = Frame(root, bg="#F0F0F0")
 
     def __init__(self):
         """Initialize the Dragons class and configure the main application window."""
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1.0)  # Set volume to maximum
         self.root = self.__class__.root
         self.config_root()
         self.lobby = self.__class__.lobby
@@ -15,6 +19,9 @@ class Dragons:
         self.rules = Frame(self.root, bg="#F0F0F0")
         self.frames_config()
         self.current_game = None
+        
+        self.music_file = '/home/joe404/dragons-game-of-life/try/dragons-game-of-life/GameOfLife/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3'
+        
         self.run()
         self.app_loop()
 
@@ -55,6 +62,31 @@ class Dragons:
 
         quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=self.root.quit, bg="#F44336", fg="white", relief=FLAT)
         quit_button.grid(row=0, column=3, padx=10, pady=10)
+
+        self.mute_button = Button(self.lobby, text="Mute", font=("Arial", 16), command=self.toggle_mute, bg="#ff5722", fg="white", relief=FLAT)
+        self.mute_button.pack(pady=10, padx=20, fill=X)
+
+        self.play_music()
+
+    def toggle_mute(self):
+        if not self.is_muted:
+            pygame.mixer.music.set_volume(0)
+            self.mute_button.config(text="Unmute")
+        else:
+            pygame.mixer.music.set_volume(1)
+            self.mute_button.config(text="Mute")
+        self.is_muted = not self.is_muted
+
+    def play_music(self):
+        """Play the background music."""
+        try:
+            pygame.mixer.music.load(self.music_file)
+            pygame.mixer.music.play(-1)  # -1 means looping indefinitely
+        except Exception as e:
+            print(f"Error playing music: {e}") 
+
+    def stop_music(self):
+        pygame.mixer.music.stop()
 
     def setting_page(self):
         """Set up the settings page with options to configure the game grid."""
