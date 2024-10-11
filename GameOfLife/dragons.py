@@ -21,7 +21,7 @@ class Dragons:
     def config_root(self):
         """Configure the main application window."""
         self.root.title("The Game of Life")
-        self.root.geometry("900x600")
+        self.root.geometry("900x700")
         self.root.resizable(False, False)
         self.root.configure(bg="#F0F0F0")
 
