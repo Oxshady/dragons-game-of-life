@@ -1,6 +1,16 @@
 from tkinter import *
 import pygame
 from tkinter import ttk
+# from playsound import playsound
+# import threading
+
+# def play_sound_in_thread(sound_file):
+#     threading.Thread(target=playsound, args=(sound_file,), daemon=True).start()
+
+def play_sound_in_thread(sound_file):
+    # Load and play sound effect using pygame.mixer
+    sound = pygame.mixer.Sound(sound_file)
+    sound.play()
 
 class Dragons:
     """The main application class for The Game of Life."""
@@ -51,6 +61,10 @@ class Dragons:
         """Start the main application loop."""
         self.root.mainloop()
 
+    def play_navigation_sound(self):
+        """Play sound of navigation"""
+        play_sound_in_thread("sound_effects/navigate.wav")
+
     def lobby_page(self):
         """Set up the lobby page with buttons to navigate to other pages."""
         title = Label(self.lobby, text="The Game of Life", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
@@ -62,13 +76,13 @@ class Dragons:
         start_button = Button(button_frame, text="Start Game", font=("Arial", 16), command=self.start_game, bg="#4CAF50", fg="white", relief=FLAT)
         start_button.grid(row=0, column=0, padx=10, pady=10)
 
-        setting_button = Button(button_frame, text="Settings", font=("Arial", 16), command=lambda: self.switch_frames(self.settings), bg="#2196F3", fg="white", relief=FLAT)
+        setting_button = Button(button_frame, text="Settings", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.settings)], bg="#2196F3", fg="white", relief=FLAT)
         setting_button.grid(row=0, column=1, padx=10, pady=10)
 
-        rules_button = Button(button_frame, text="Rules", font=("Arial", 16), command=lambda: self.switch_frames(self.rules), bg="#FF9800", fg="white", relief=FLAT)
+        rules_button = Button(button_frame, text="Rules", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)], bg="#FF9800", fg="white", relief=FLAT)
         rules_button.grid(row=0, column=2, padx=10, pady=10)
 
-        quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=self.root.quit, bg="#F44336", fg="white", relief=FLAT)
+        quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=lambda: [play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)], bg="#F44336", fg="white", relief=FLAT)
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
         music_frame = Frame(self.lobby, bg="#F0F0F0")
@@ -97,9 +111,11 @@ class Dragons:
         if not self.is_muted:
             pygame.mixer.music.set_volume(0)
             self.mute_button.config(text="Unmute")
+            play_sound_in_thread("sound_effects/navigate.wav")
         else:
             pygame.mixer.music.set_volume(1)
             self.mute_button.config(text="Mute")
+            play_sound_in_thread("sound_effects/navigate.wav")
         self.is_muted = not self.is_muted
 
     def play_music(self):
@@ -121,18 +137,25 @@ class Dragons:
         entry_frame = Frame(self.settings, bg="#F0F0F0")
         entry_frame.pack(pady=20)
 
+        # Width and height labels
+        width_label = Label(entry_frame, text="Width", font=("Arial", 14), bg="#F0F0F0")
+        width_label.grid(row=0, column=0, padx=5)
+
+        height_label = Label(entry_frame, text="Height", font=("Arial", 14), bg="#F0F0F0")
+        height_label.grid(row=0, column=1, padx=5)
+
         self.rows_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
         self.rows_entry.insert(0, "20")
-        self.rows_entry.grid(row=0, column=0, padx=5)
+        self.rows_entry.grid(row=1, column=0, padx=5)
 
         self.cols_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
         self.cols_entry.insert(0, "20")
-        self.cols_entry.grid(row=0, column=1, padx=5)
+        self.cols_entry.grid(row=1, column=1, padx=5)
 
         apply_button = Button(self.settings, text="Apply", font=("Arial", 14), command=self.apply_settings, bg="#4CAF50", fg="white", relief=FLAT)
         apply_button.pack(pady=10)
 
-        return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
+        return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
         return_button_music.pack(pady=10)
 
         stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=self.stop_music, bg="#FF5722", fg="white", relief=FLAT)
@@ -157,7 +180,7 @@ class Dragons:
         rules_label = Label(self.rules, text=description, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
         rules_label.pack(pady=(10, 10))
 
-        return_button = Button(self.rules, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
+        return_button = Button(self.rules, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
         return_button.pack(pady=10)
 
     def apply_settings(self):
@@ -168,6 +191,7 @@ class Dragons:
             self.game_page(rows, cols)
             if self.current_game:
                 self.current_game.start_game()
+            play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
 
@@ -186,6 +210,7 @@ class Dragons:
 
     def start_game(self):
         """Start the game by setting up the game page."""
+        play_sound_in_thread("sound_effects/start_game2.mp3")
         self.game_page()
 
     def run(self):

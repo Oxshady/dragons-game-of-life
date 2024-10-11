@@ -2,6 +2,13 @@ from tkinter import *
 from tkinter import ttk
 import random
 import json
+import pygame
+
+def play_sound_in_thread(sound_file):
+    # Load and play sound effect using pygame.mixer
+    sound = pygame.mixer.Sound(sound_file)
+    sound.play()
+
 class GameOfLife:
     """
     The Game of Life class that implements the Game of Life simulation.
@@ -15,6 +22,8 @@ class GameOfLife:
         self.cols = cols
         self.cell_size = cell_size
         self.is_running = False
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1.0)
 
         self.canvas = Canvas(frame, width=cols * cell_size, height=rows * cell_size, bg='white', highlightbackground="#ccc")
         self.canvas.pack(pady=20)
@@ -52,24 +61,24 @@ class GameOfLife:
         self.dead_color_combobox.bind("<<ComboboxSelected>>", self.update_dead_color)
         self.dead_color_combobox.grid(row=0, column=1, padx=5)
 
-        self.start_button = Button(self.color_frame, text="Start", command=self.start_game, bg="#4CAF50", fg="white", relief=FLAT)
+        self.start_button = Button(self.color_frame, text="Start", command=lambda: [self.start_game(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
         self.start_button.grid(row=0, column=2, padx=5)
 
-        self.stop_button = Button(self.color_frame, text="Stop", command=self.stop_game, bg="#F44336", fg="white", relief=FLAT)
+        self.stop_button = Button(self.color_frame, text="Stop", command=lambda: [self.stop_game(), play_sound_in_thread("sound_effects/exit3.wav")], bg="#F44336", fg="white", relief=FLAT)
         self.stop_button.grid(row=0, column=3, padx=5)
 
-        self.clear_button = Button(self.color_frame, text="Clear", command=self.clear_grid, bg="#FF9800", fg="white", relief=FLAT)
+        self.clear_button = Button(self.color_frame, text="Clear", command=lambda: [self.clear_grid(), play_sound_in_thread("sound_effects/reset.wav")], bg="#FF9800", fg="white", relief=FLAT)
         self.clear_button.grid(row=0, column=4, padx=5)
 
-        self.randomize_button = Button(self.color_frame, text="Randomize", command=self.randomize_grid, bg="#58CBFC", fg="white", relief=FLAT)
+        self.randomize_button = Button(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")], bg="#58CBFC", fg="white", relief=FLAT)
         self.randomize_button.grid(row=0, column=5, padx=5)
         from dragons import Dragons
-        self.lobby_button = Button(self.color_frame, text="lobby", command=Dragons.lobby.tkraise, bg="#58FCC2", fg="white", relief=FLAT)
+        self.lobby_button = Button(self.color_frame, text="lobby", command=lambda: [Dragons.lobby.tkraise(), play_sound_in_thread("sound_effects/navigate.wav")], bg="#58FCC2", fg="white", relief=FLAT)
         self.lobby_button.grid(row=0, column=6, padx=5)
-        save_button = Button(self.color_frame, text="Save Pattern", command=self.save_pattern, font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
+        save_button = Button(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern, play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
         save_button.grid(row=1, column=2, padx=5, pady=5)
 
-        load_button = Button(self.color_frame, text="Load Pattern", command=self.load_pattern, font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
+        load_button = Button(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern, play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
         load_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.draw_grid()
@@ -84,7 +93,9 @@ class GameOfLife:
         col = x // self.cell_size
         if 0 <= row < self.rows and 0 <= col < self.cols:
             self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
+            play_sound_in_thread("sound_effects/click_cell.wav")
             self.update_canvas()
+
 
     def draw_grid(self):
         """
