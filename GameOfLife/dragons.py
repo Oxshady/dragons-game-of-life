@@ -1,5 +1,6 @@
 from tkinter import *
 import pygame
+from tkinter import ttk
 
 class Dragons:
     """The main application class for The Game of Life."""
@@ -20,7 +21,14 @@ class Dragons:
         self.frames_config()
         self.current_game = None
         
-        self.music_file = '/home/joe404/dragons-game-of-life/GameOfLife2/dragons-game-of-life/GameOfLife/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3'
+        self.music_tracks = {
+            "Ahemd Kamel": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
+            "Cairokee": "./music/Cairokee - Law Kan 3andi Guitar _ كايروكي - لو كان عندي جيتار ( 128kbps ).mp3",
+            "Gipper Kings": "./music/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3",
+            "Ahmed Santa: Emna3-elklam": "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3",
+            "Ahmed Santa: Ahmed-santa": "./music/Ahmed Santa - Ahmed Santa  أحمد سانتا - أحمد سانتا (Prod. Mello) (Audio).mp3"
+        }
+        self.music_file = "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3"
         
         self.run()
         self.app_loop()
@@ -63,9 +71,26 @@ class Dragons:
         quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=self.root.quit, bg="#F44336", fg="white", relief=FLAT)
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
+        music_frame = Frame(self.lobby, bg="#F0F0F0")
+        music_frame.pack(pady=10)
+
+        self.current_music_label = Label(music_frame, text="Current Music: Ahmed Santa: Emna3-elklam", font=("Arial", 14), bg="#F0F0F0", fg="#333")
+        self.current_music_label.pack(pady=5)
+
+        self.music_selection = ttk.Combobox(self.lobby, values=list(self.music_tracks.keys()), state="readonly")
+        self.music_selection.pack(pady=10)
+        self.music_selection.set("Ahmed Santa: Emna3-elklam")
+        self.music_selection.bind("<<ComboboxSelected>>", self.update_music_selection)
+
         self.mute_button = Button(self.lobby, text="Mute", font=("Arial", 16), command=self.toggle_mute, bg="#ff5722", fg="white", relief=FLAT)
         self.mute_button.pack(pady=10, padx=20, fill=X)
 
+        self.play_music()
+
+
+    def update_music_selection(self, event):
+        selected_track = self.music_selection.get()
+        self.music_file = self.music_tracks[selected_track]
         self.play_music()
 
     def toggle_mute(self):
@@ -107,8 +132,12 @@ class Dragons:
         apply_button = Button(self.settings, text="Apply", font=("Arial", 14), command=self.apply_settings, bg="#4CAF50", fg="white", relief=FLAT)
         apply_button.pack(pady=10)
 
-        return_button = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
-        return_button.pack(pady=10)
+        return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: self.switch_frames(self.lobby), bg="#FF5722", fg="white", relief=FLAT)
+        return_button_music.pack(pady=10)
+
+        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=self.stop_music, bg="#FF5722", fg="white", relief=FLAT)
+        stop_button_music.pack(pady=10)
+
 
     def rules_page(self):
         """Set up the rules page with a description of the game rules."""
