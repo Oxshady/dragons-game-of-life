@@ -137,13 +137,20 @@ class Dragons:
         entry_frame = Frame(self.settings, bg="#F0F0F0")
         entry_frame.pack(pady=20)
 
+        # Width and height labels
+        width_label = Label(entry_frame, text="Width", font=("Arial", 14), bg="#F0F0F0")
+        width_label.grid(row=0, column=0, padx=5)
+
+        height_label = Label(entry_frame, text="Height", font=("Arial", 14), bg="#F0F0F0")
+        height_label.grid(row=0, column=1, padx=5)
+
         self.rows_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
         self.rows_entry.insert(0, "20")
-        self.rows_entry.grid(row=0, column=0, padx=5)
+        self.rows_entry.grid(row=1, column=0, padx=5)
 
         self.cols_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
         self.cols_entry.insert(0, "20")
-        self.cols_entry.grid(row=0, column=1, padx=5)
+        self.cols_entry.grid(row=1, column=1, padx=5)
 
         apply_button = Button(self.settings, text="Apply", font=("Arial", 14), command=self.apply_settings, bg="#4CAF50", fg="white", relief=FLAT)
         apply_button.pack(pady=10)
