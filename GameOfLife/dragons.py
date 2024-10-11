@@ -1,11 +1,6 @@
 from tkinter import *
-import pygame
 from tkinter import ttk
-# from playsound import playsound
-# import threading
-
-# def play_sound_in_thread(sound_file):
-#     threading.Thread(target=playsound, args=(sound_file,), daemon=True).start()
+import pygame # Using pygame to handle sound effects and music
 
 def play_sound_in_thread(sound_file):
     # Load and play sound effect using pygame.mixer
@@ -111,11 +106,11 @@ class Dragons:
         if not self.is_muted:
             pygame.mixer.music.set_volume(0)
             self.mute_button.config(text="Unmute")
-            play_sound_in_thread("sound_effects/navigate.wav")
+            play_sound_in_thread("sound_effects/click2.wav")
         else:
             pygame.mixer.music.set_volume(1)
             self.mute_button.config(text="Mute")
-            play_sound_in_thread("sound_effects/navigate.wav")
+            play_sound_in_thread("sound_effects/click2.wav")
         self.is_muted = not self.is_muted
 
     def play_music(self):
@@ -158,7 +153,7 @@ class Dragons:
         return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
         return_button_music.pack(pady=10)
 
-        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=self.stop_music, bg="#FF5722", fg="white", relief=FLAT)
+        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=lambda: [play_sound_in_thread("./sound_effects/click2.wav"), self.stop_music()], bg="#FF5722", fg="white", relief=FLAT)
         stop_button_music.pack(pady=10)
 
 
