@@ -1,5 +1,7 @@
 # Resume: Conway's Game of Life
 
+[![Download Latest Release](https://img.shields.io/badge/Download-Latest%20Release-green)](https://github.com/Oxshady/dragons-game-of-life/releases/tag/v1.0.0)
+
 ## Project Overview
 **Title**: Conway's Game of Life  
 **Author**: Shadi  
