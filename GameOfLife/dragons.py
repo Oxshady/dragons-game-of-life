@@ -10,7 +10,7 @@ class Dragons:
     def __init__(self):
         """Initialize the Dragons class and configure the main application window."""
         pygame.mixer.init()
-        pygame.mixer.music.set_volume(1.0)  # Set volume to maximum
+        pygame.mixer.music.set_volume(1.0)
         self.root = self.__class__.root
         self.config_root()
         self.lobby = self.__class__.lobby
@@ -20,7 +20,7 @@ class Dragons:
         self.frames_config()
         self.current_game = None
         
-        self.music_file = '/home/joe404/dragons-game-of-life/try/dragons-game-of-life/GameOfLife/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3'
+        self.music_file = '/home/joe404/dragons-game-of-life/GameOfLife2/dragons-game-of-life/GameOfLife/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3'
         
         self.run()
         self.app_loop()
@@ -81,7 +81,7 @@ class Dragons:
         """Play the background music."""
         try:
             pygame.mixer.music.load(self.music_file)
-            pygame.mixer.music.play(-1)  # -1 means looping indefinitely
+            pygame.mixer.music.play(-1)
         except Exception as e:
             print(f"Error playing music: {e}") 
 
