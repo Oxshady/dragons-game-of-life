@@ -75,10 +75,10 @@ class GameOfLife:
         from dragons import Dragons
         self.lobby_button = Button(self.color_frame, text="lobby", command=lambda: [Dragons.lobby.tkraise(), play_sound_in_thread("sound_effects/navigate.wav")], bg="#58FCC2", fg="white", relief=FLAT)
         self.lobby_button.grid(row=0, column=6, padx=5)
-        save_button = Button(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern, play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
+        save_button = Button(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
         save_button.grid(row=1, column=2, padx=5, pady=5)
 
-        load_button = Button(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern, play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
+        load_button = Button(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
         load_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.draw_grid()
