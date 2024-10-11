@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import random
-
+import json
 class GameOfLife:
     """
     The Game of Life class that implements the Game of Life simulation.
@@ -66,6 +66,11 @@ class GameOfLife:
         from dragons import Dragons
         self.lobby_button = Button(self.color_frame, text="lobby", command=Dragons.lobby.tkraise, bg="#58FCC2", fg="white", relief=FLAT)
         self.lobby_button.grid(row=0, column=6, padx=5)
+        save_button = Button(self.color_frame, text="Save Pattern", command=self.save_pattern, font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
+        save_button.grid(row=1, column=2, padx=5, pady=5)
+
+        load_button = Button(self.color_frame, text="Load Pattern", command=self.load_pattern, font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
+        load_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.draw_grid()
         self.update_canvas()
@@ -193,3 +198,15 @@ class GameOfLife:
                     continue
                 count += self.grid[i][j]
         return count
+    def save_pattern(self):
+        """Save the current grid pattern to a file."""
+        with open("saved_pattern.json", "w") as file:
+            json.dump(self.grid, file)
+    def load_pattern(self):
+        """Load a saved grid pattern from a file."""
+        try:
+            with open("saved_pattern.json", "r") as file:
+                self.grid = json.load(file)
+            self.draw_grid()
+        except FileNotFoundError:
+            print("No saved pattern found.")
