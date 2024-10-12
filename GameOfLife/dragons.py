@@ -159,24 +159,41 @@ class Dragons:
 
     def rules_page(self):
         """Set up the rules page with a description of the game rules."""
-        title = Label(self.rules, text="Game Rules", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
-        title.pack(pady=(30, 10))
+        
+        title_frame = Frame(self.rules, bg="#F0F0F0")
+        title_frame.pack(pady=(30, 10))
+        
+        title = Label(title_frame, text="Game Rules", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
+        title.pack()
+
+        description_frame = Frame(self.rules, bg="#F0F0F0", padx=20, pady=20)
+        description_frame.pack(pady=(10, 10))
 
         description = (
-            "The Game of Life is a cellular automaton devised by the British mathematician John Conway in 1970.\n"
+            "The Game of Life is a cellular automaton devised by the British mathematician John Conway in 1970.\n\n"
             "It consists of a grid of cells that live, die, or multiply based on a set of rules:\n"
-            "1. Any live cell with fewer than two live neighbors dies (underpopulation).\n"
-            "2. Any live cell with two or three live neighbors lives on to the next generation.\n"
-            "3. Any live cell with more than three live neighbors dies (overpopulation).\n"
-            "4. Any dead cell with exactly three live neighbors becomes a live cell (reproduction).\n"
-            "These rules determine the fate of each cell in each generation."
         )
+
+        rules_label = Label(description_frame, text=description, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+        rules_label.pack(anchor='w')
+
+        rules_list = [
+            "※ Any live cell with fewer than two live neighbors dies (underpopulation).",
+            "※ Any live cell with two or three live neighbors lives on to the next generation.",
+            "※ Any live cell with more than three live neighbors dies (overpopulation).",
+            "※ Any dead cell with exactly three live neighbors becomes a live cell (reproduction)."
+        ]
         
-        rules_label = Label(self.rules, text=description, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
-        rules_label.pack(pady=(10, 10))
+        for rule in rules_list:
+            rule_label = Label(description_frame, text=rule, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+            rule_label.pack(anchor='w')
+
+        conclusion_label = Label(description_frame, text="These rules determine the fate of each cell in each generation.", font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+        conclusion_label.pack(anchor='w', pady=20)
 
         return_button = Button(self.rules, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
-        return_button.pack(pady=10)
+        return_button.pack(pady=20)
+
 
     def apply_settings(self):
         """Apply the settings for the game grid and start the game."""
