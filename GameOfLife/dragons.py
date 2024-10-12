@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import pygame # Using pygame to handle sound effects and music 
 
 class Dragons:
     """The main application class for The Game of Life."""
@@ -52,7 +53,7 @@ class Dragons:
 
     def play_navigation_sound(self):
         """Play sound of navigation"""
-        play_sound_in_thread("sound_effects/navigate.wav")
+        self.play_sound_in_thread("sound_effects/navigate.wav")
 
     def lobby_page(self):
         """Set up the lobby page with buttons to navigate to other pages."""
@@ -71,7 +72,7 @@ class Dragons:
         rules_button = Button(button_frame, text="Rules", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)], bg="#FF9800", fg="white", relief=FLAT)
         rules_button.grid(row=0, column=2, padx=10, pady=10)
 
-        quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=lambda: [play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)], bg="#F44336", fg="white", relief=FLAT)
+        quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=lambda: [self.play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)], bg="#F44336", fg="white", relief=FLAT)
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
         music_frame = Frame(self.lobby, bg="#F0F0F0")
@@ -100,11 +101,11 @@ class Dragons:
         if not self.is_muted:
             pygame.mixer.music.set_volume(0)
             self.mute_button.config(text="Unmute")
-            play_sound_in_thread("sound_effects/click2.wav")
+            self.play_sound_in_thread("sound_effects/click2.wav")
         else:
             pygame.mixer.music.set_volume(1)
             self.mute_button.config(text="Mute")
-            play_sound_in_thread("sound_effects/click2.wav")
+            self.play_sound_in_thread("sound_effects/click2.wav")
         self.is_muted = not self.is_muted
 
         # Stop music if muted or resume if unmuted
@@ -154,7 +155,7 @@ class Dragons:
         return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
         return_button_music.pack(pady=10)
 
-        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=lambda: [play_sound_in_thread("./sound_effects/click2.wav"), self.stop_music()], bg="#FF5722", fg="white", relief=FLAT)
+        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=lambda: [self.play_sound_in_thread("./sound_effects/click2.wav"), self.stop_music()], bg="#FF5722", fg="white", relief=FLAT)
         stop_button_music.pack(pady=10)
 
 
@@ -205,7 +206,7 @@ class Dragons:
             if self.current_game:
                 self.current_game.start_game()
             if self.is_muted:
-                play_sound_in_thread("sound_effects/start_game2.mp3")
+                self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
 
@@ -225,8 +226,13 @@ class Dragons:
     def start_game(self):
         """Start the game by setting up the game page."""
         if self.is_muted:
-            play_sound_in_thread("sound_effects/start_game2.mp3")
+            self.play_sound_in_thread("sound_effects/start_game2.mp3")
         self.game_page()
+
+    def play_sound_in_thread(self, sound_file):
+        """Load and play sound effect using pygame.mixer"""
+        sound = pygame.mixer.Sound(sound_file)
+        sound.play()
 
     def run(self):
         """Run the application by setting up all pages and showing the lobby page."""
@@ -235,9 +241,3 @@ class Dragons:
         self.rules_page()
         self.switch_frames(self.lobby)
 
-import pygame # Using pygame to handle sound effects and music 
-
-def play_sound_in_thread(sound_file):
-    """Load and play sound effect using pygame.mixer"""
-    sound = pygame.mixer.Sound(sound_file)
-    sound.play()
