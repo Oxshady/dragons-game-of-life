@@ -1,22 +1,15 @@
-from tkinter import *
-from tkinter import ttk
+import customtkinter as ctk
+from tkinter import Canvas, colorchooser
 import random
 import json
 import pygame
 
 def play_sound_in_thread(sound_file):
-    # Load and play sound effect using pygame.mixer
     sound = pygame.mixer.Sound(sound_file)
     sound.play()
 
 class GameOfLife:
-    """
-    The Game of Life class that implements the Game of Life simulation.
-    """
     def __init__(self, frame, rows=20, cols=20, cell_size=20):
-        """
-        Initialize the Game of Life with a given frame, number of rows, columns, and cell size.
-        """
         self.frame = frame
         self.rows = rows
         self.cols = cols
@@ -33,67 +26,64 @@ class GameOfLife:
 
         self.canvas.bind("<Button-1>", self.toggle_cell)
 
-        self.slider_frame = Frame(frame, bg="#F0F0F0")
+        self.slider_frame = ctk.CTkFrame(frame)
         self.slider_frame.pack(pady=10)
 
-        self.speed_scale = Scale(self.slider_frame, from_=500, to=10, orient=HORIZONTAL, label="Speed (ms)", font=("Arial", 12, "bold"), length=200, bg="#F0F0F0")
+        self.speed_scale = ctk.CTkSlider(self.slider_frame, from_=10, to=500, number_of_steps=49, command=self.update_speed)
         self.speed_scale.set(250)
         self.speed_scale.pack(side='left', padx=5)
+        self.speed_label = ctk.CTkLabel(self.slider_frame, text="Speed: 250ms")
+        self.speed_label.pack(side='left', padx=5)
 
-        self.zoom_scale = Scale(self.slider_frame, from_=10, to=37, orient=HORIZONTAL, label="Zoom", font=("Arial", 12, "bold"), length=200, command=self.zoom_grid)
+        self.zoom_scale = ctk.CTkSlider(self.slider_frame, from_=10, to=37, number_of_steps=27, command=self.zoom_grid)
         self.zoom_scale.set(self.cell_size)
         self.zoom_scale.pack(side='left', padx=5)
+        self.zoom_label = ctk.CTkLabel(self.slider_frame, text=f"Zoom: {self.cell_size}")
+        self.zoom_label.pack(side='left', padx=5)
 
-        self.color_frame = Frame(frame, bg="#F0F0F0")
+        self.color_frame = ctk.CTkFrame(frame)
         self.color_frame.pack(pady=10)
 
-        self.color_list = ['black', 'red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink']
         self.alive_color = 'black'
         self.dead_color = 'white'
 
-        self.alive_color_combobox = ttk.Combobox(self.color_frame, values=self.color_list, state='readonly', width=12)
-        self.alive_color_combobox.set(self.alive_color)
-        self.alive_color_combobox.bind("<<ComboboxSelected>>", self.update_alive_color)
-        self.alive_color_combobox.grid(row=0, column=0, padx=5)
+        self.alive_color_button = ctk.CTkButton(self.color_frame, text="Alive Color", command=self.choose_alive_color)
+        self.alive_color_button.grid(row=0, column=0, padx=5)
 
-        self.dead_color_combobox = ttk.Combobox(self.color_frame, values=self.color_list, state='readonly', width=12)
-        self.dead_color_combobox.set(self.dead_color)
-        self.dead_color_combobox.bind("<<ComboboxSelected>>", self.update_dead_color)
-        self.dead_color_combobox.grid(row=0, column=1, padx=5)
+        self.dead_color_button = ctk.CTkButton(self.color_frame, text="Dead Color", command=self.choose_dead_color)
+        self.dead_color_button.grid(row=0, column=1, padx=5)
+
         self.boundary_condition = 'Finite'
         self.boundary_conditions = ['Finite', 'Reflective', 'Toroidal', 'Infinite']
-        self.boundary_combobox = ttk.Combobox(self.color_frame, values=self.boundary_conditions, state='readonly', width=12)
+        self.boundary_combobox = ctk.CTkOptionMenu(self.color_frame, values=self.boundary_conditions, command=self.update_boundary_condition)
         self.boundary_combobox.set("Select Boundary")
-        self.boundary_combobox.bind("<<ComboboxSelected>>", self.update_boundary_condition)
         self.boundary_combobox.grid(row=1, column=0, padx=5)
 
-        self.start_button = Button(self.color_frame, text="Start", command=lambda: [self.start_game(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
-        self.start_button.grid(row=0, column=2, padx=5)
+        self.toggle_button = ctk.CTkButton(self.color_frame, text="Start", command=self.toggle_game)
+        self.toggle_button.grid(row=0, column=2, padx=5)
 
-        self.stop_button = Button(self.color_frame, text="Stop", command=lambda: [self.stop_game(), play_sound_in_thread("sound_effects/exit3.wav")], bg="#F44336", fg="white", relief=FLAT)
-        self.stop_button.grid(row=0, column=3, padx=5)
+        self.clear_button = ctk.CTkButton(self.color_frame, text="Clear", command=lambda: [self.clear_grid(), play_sound_in_thread("sound_effects/reset.wav")])
+        self.clear_button.grid(row=0, column=3, padx=5)
 
-        self.clear_button = Button(self.color_frame, text="Clear", command=lambda: [self.clear_grid(), play_sound_in_thread("sound_effects/reset.wav")], bg="#FF9800", fg="white", relief=FLAT)
-        self.clear_button.grid(row=0, column=4, padx=5)
+        self.randomize_button = ctk.CTkButton(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")])
+        self.randomize_button.grid(row=0, column=4, padx=5)
 
-        self.randomize_button = Button(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")], bg="#58CBFC", fg="white", relief=FLAT)
-        self.randomize_button.grid(row=0, column=5, padx=5)
-        from dragons import Dragons
-        self.lobby_button = Button(self.color_frame, text="lobby", command=lambda: [Dragons.lobby.tkraise(), play_sound_in_thread("sound_effects/navigate.wav")], bg="#58FCC2", fg="white", relief=FLAT)
-        self.lobby_button.grid(row=0, column=6, padx=5)
-        save_button = Button(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#673AB7", fg="white", relief=FLAT)
+        self.lobby_button = ctk.CTkButton(self.color_frame, text="Lobby", command=lambda: [self.frame.master.lobby.tkraise(), play_sound_in_thread("sound_effects/navigate.wav")])
+
+        self.lobby_button.grid(row=0, column=5, padx=5)
+
+        save_button = ctk.CTkButton(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")])
         save_button.grid(row=1, column=2, padx=5, pady=5)
 
-        load_button = Button(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 12, "bold"), bg="#FFEB3B", fg="black", relief=FLAT)
+        load_button = ctk.CTkButton(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern(), play_sound_in_thread("sound_effects/click2.wav")])
         load_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.draw_grid()
         self.update_canvas()
+        print(self.frame.master)
+        print(dir(self.frame.master))
 
     def toggle_cell(self, event):
-        """
-        Toggle the state of a cell between alive and dead when clicked.
-        """
         x, y = event.x, event.y
         row = y // self.cell_size
         col = x // self.cell_size
@@ -102,11 +92,7 @@ class GameOfLife:
             play_sound_in_thread("sound_effects/click_cell.wav")
             self.update_canvas()
 
-
     def draw_grid(self):
-        """
-        Draw the grid on the canvas with the current state of each cell.
-        """
         for i in range(self.rows):
             for j in range(self.cols):
                 color = self.alive_color if self.grid[i][j] == 1 else self.dead_color
@@ -115,89 +101,75 @@ class GameOfLife:
                                               fill=color, outline="#ccc")
 
     def update_canvas(self):
-        """
-        Update the canvas by redrawing the grid.
-        """
         self.canvas.delete("all")
         self.draw_grid()
 
-    def update_boundary_condition(self, event):
-        self.boundary_condition = self.boundary_combobox.get()
+    def update_boundary_condition(self, choice):
+        self.boundary_condition = choice
 
     def update_grid(self, rows, cols):
-        """
-        Update the grid dimensions and reset the grid with random values.
-        """
         self.rows = rows
         self.cols = cols
-        self.cell_size = self.zoom_scale.get()
+        self.cell_size = int(self.zoom_scale.get())
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
         self.update_canvas()
 
     def zoom_grid(self, value):
-        """
-        Zoom the grid by adjusting the cell size.
-        """
-        self.cell_size = int(value)
+        self.cell_size = int(float(value))
         self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
         self.update_canvas()
+        self.zoom_label.configure(text=f"Zoom: {self.cell_size}")
 
-    def update_alive_color(self, event):
-        """
-        Update the color used for alive cells.
-        """
-        self.alive_color = self.alive_color_combobox.get()
-        self.update_canvas()
+    def update_speed(self, value):
+        speed = int(float(value))
+        self.speed_label.configure(text=f"Speed: {speed}ms")
 
-    def update_dead_color(self, event):
-        """
-        Update the color used for dead cells.
-        """
-        self.dead_color = self.dead_color_combobox.get()
-        self.update_canvas()
+    def choose_alive_color(self):
+        color = colorchooser.askcolor(title="Choose color for alive cells")[1]
+        if color:
+            self.alive_color = color
+            self.update_canvas()
+
+    def choose_dead_color(self):
+        color = colorchooser.askcolor(title="Choose color for dead cells")[1]
+        if color:
+            self.dead_color = color
+            self.update_canvas()
+
+    def toggle_game(self):
+        if self.is_running:
+            self.stop_game()
+            self.toggle_button.configure(text="Start")
+            play_sound_in_thread("sound_effects/exit3.wav")
+        else:
+            self.start_game()
+            self.toggle_button.configure(text="Pause")
+            play_sound_in_thread("sound_effects/click2.wav")
 
     def start_game(self):
-        """
-        Start the Game of Life simulation.
-        """
         self.is_running = True
         self.run_game()
 
     def run_game(self):
-        """
-        Run the Game of Life simulation by updating cells and redrawing the grid.
-        """
         if self.is_running:
             self.update_cells()
             self.update_canvas()
-            self.frame.after(self.speed_scale.get(), self.run_game)
+            self.frame.after(int(self.speed_scale.get()), self.run_game)
 
     def stop_game(self):
-        """
-        Stop the Game of Life simulation.
-        """
         self.is_running = False
 
     def clear_grid(self):
-        """
-        Clear the grid by setting all cells to dead.
-        """
         self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
         self.update_canvas()
 
     def randomize_grid(self):
-        """
-        Randomize the grid by setting each cell to a random state.
-        """
         self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
         self.update_canvas()
 
     def update_cells(self):
-        """
-        Update the state of each cell based on the Game of Life rules.
-        """
         for i in range(self.rows):
             for j in range(self.cols):
                 live_neighbors = self.count_live_neighbors(i, j)
@@ -206,8 +178,8 @@ class GameOfLife:
                 else:
                     self.temp_grid[i][j] = 1 if live_neighbors == 3 else 0
         self.grid, self.temp_grid = self.temp_grid, self.grid
+
     def count_live_neighbors(self, row, col):
-        """Count the number of live neighbors for a given cell and implement boundary logic."""
         def finite_boundary(i, j):
             return 0 <= i < self.rows and 0 <= j < self.cols
         def infinite_boundary(i, j):
@@ -244,15 +216,16 @@ class GameOfLife:
                     count += infinite_boundary(i, j)
 
         return count
+
     def save_pattern(self):
-        """Save the current grid pattern to a file."""
-        with open("saved_pattern.json", "w") as file:
-            json.dump(self.grid, file)
+        file_path = ctk.filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        if file_path:
+            with open(file_path, "w") as file:
+                json.dump(self.grid, file)
+
     def load_pattern(self):
-        """Load a saved grid pattern from a file."""
-        try:
-            with open("saved_pattern.json", "r") as file:
+        file_path = ctk.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+        if file_path:
+            with open(file_path, "r") as file:
                 self.grid = json.load(file)
             self.draw_grid()
-        except FileNotFoundError:
-            print("No saved pattern found.")
