@@ -1,11 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-import pygame # Using pygame to handle sound effects and music
-
-def play_sound_in_thread(sound_file):
-    # Load and play sound effect using pygame.mixer
-    sound = pygame.mixer.Sound(sound_file)
-    sound.play()
 
 class Dragons:
     """The main application class for The Game of Life."""
@@ -42,7 +36,7 @@ class Dragons:
         """Configure the main application window."""
         self.root.title("The Game of Life")
         self.root.geometry("900x700")
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         self.root.configure(bg="#F0F0F0")
 
     def frames_config(self):
@@ -240,3 +234,10 @@ class Dragons:
         self.setting_page()
         self.rules_page()
         self.switch_frames(self.lobby)
+
+import pygame # Using pygame to handle sound effects and music 
+
+def play_sound_in_thread(sound_file):
+    """Load and play sound effect using pygame.mixer"""
+    sound = pygame.mixer.Sound(sound_file)
+    sound.play()

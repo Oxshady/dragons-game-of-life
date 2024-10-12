@@ -40,7 +40,7 @@ class GameOfLife:
         self.speed_scale.set(250)
         self.speed_scale.pack(side='left', padx=5)
 
-        self.zoom_scale = Scale(self.slider_frame, from_=10, to=50, orient=HORIZONTAL, label="Zoom", font=("Arial", 12, "bold"), length=200, command=self.zoom_grid)
+        self.zoom_scale = Scale(self.slider_frame, from_=10, to=37, orient=HORIZONTAL, label="Zoom", font=("Arial", 12, "bold"), length=200, command=self.zoom_grid)
         self.zoom_scale.set(self.cell_size)
         self.zoom_scale.pack(side='left', padx=5)
 
