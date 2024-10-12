@@ -113,13 +113,20 @@ class Dragons:
             play_sound_in_thread("sound_effects/click2.wav")
         self.is_muted = not self.is_muted
 
+        # Stop music if muted or resume if unmuted
+        if self.is_muted:
+            pygame.mixer.music.pause()
+        else:
+            pygame.mixer.music.unpause()
+
     def play_music(self):
         """Play the background music."""
-        try:
-            pygame.mixer.music.load(self.music_file)
-            pygame.mixer.music.play(-1)
-        except Exception as e:
-            print(f"Error playing music: {e}") 
+        if not self.is_muted:
+            try:
+                pygame.mixer.music.load(self.music_file)
+                pygame.mixer.music.play(-1)
+            except Exception as e:
+                print(f"Error playing music: {e}") 
 
     def stop_music(self):
         pygame.mixer.music.stop()
@@ -203,7 +210,8 @@ class Dragons:
             self.game_page(rows, cols)
             if self.current_game:
                 self.current_game.start_game()
-            play_sound_in_thread("sound_effects/start_game2.mp3")
+            if self.is_muted:
+                play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
 
@@ -222,7 +230,8 @@ class Dragons:
 
     def start_game(self):
         """Start the game by setting up the game page."""
-        play_sound_in_thread("sound_effects/start_game2.mp3")
+        if self.is_muted:
+            play_sound_in_thread("sound_effects/start_game2.mp3")
         self.game_page()
 
     def run(self):
