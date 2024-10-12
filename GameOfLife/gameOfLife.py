@@ -60,6 +60,12 @@ class GameOfLife:
         self.dead_color_combobox.set(self.dead_color)
         self.dead_color_combobox.bind("<<ComboboxSelected>>", self.update_dead_color)
         self.dead_color_combobox.grid(row=0, column=1, padx=5)
+        self.boundary_condition = 'Finite'
+        self.boundary_conditions = ['Finite', 'Reflective', 'Toroidal', 'Infinite']
+        self.boundary_combobox = ttk.Combobox(self.color_frame, values=self.boundary_conditions, state='readonly', width=12)
+        self.boundary_combobox.set("Select Boundary")
+        self.boundary_combobox.bind("<<ComboboxSelected>>", self.update_boundary_condition)
+        self.boundary_combobox.grid(row=1, column=0, padx=5)
 
         self.start_button = Button(self.color_frame, text="Start", command=lambda: [self.start_game(), play_sound_in_thread("sound_effects/click2.wav")], font=("Arial", 14), bg="#4CAF50", fg="white", relief=FLAT)
         self.start_button.grid(row=0, column=2, padx=5)
@@ -114,6 +120,9 @@ class GameOfLife:
         """
         self.canvas.delete("all")
         self.draw_grid()
+
+    def update_boundary_condition(self, event):
+        self.boundary_condition = self.boundary_combobox.get()
 
     def update_grid(self, rows, cols):
         """
@@ -197,17 +206,43 @@ class GameOfLife:
                 else:
                     self.temp_grid[i][j] = 1 if live_neighbors == 3 else 0
         self.grid, self.temp_grid = self.temp_grid, self.grid
-
     def count_live_neighbors(self, row, col):
-        """
-        Count the number of live neighbors for a given cell.
-        """
+        """Count the number of live neighbors for a given cell and implement boundary logic."""
+        def finite_boundary(i, j):
+            return 0 <= i < self.rows and 0 <= j < self.cols
+        def infinite_boundary(i, j):
+                return self.grid[i][j] if (0 <= i < self.rows and 0 <= j < self.cols) else 0
+        def reflective_boundary(i, j):
+            reflected_i = max(0, min(i, self.rows - 1))
+            reflected_j = max(0, min(j, self.cols - 1))
+            return reflected_i, reflected_j
+
+        def toroidal_boundary(i, j):
+            ni = (i + self.rows) % self.rows
+            nj = (j + self.cols) % self.cols
+            return ni, nj
+
         count = 0
         for i in range(row - 1, row + 2):
             for j in range(col - 1, col + 2):
-                if (i == row and j == col) or i < 0 or i >= self.rows or j < 0 or j >= self.cols:
+                if i == row and j == col:
                     continue
-                count += self.grid[i][j]
+
+                if self.boundary_condition == 'Finite':
+                    if finite_boundary(i, j):
+                        count += self.grid[i][j]
+
+                elif self.boundary_condition == 'Reflective':
+                    reflected_i, reflected_j = reflective_boundary(i, j)
+                    count += self.grid[reflected_i][reflected_j]
+
+                elif self.boundary_condition == 'Toroidal':
+                    ni, nj = toroidal_boundary(i, j)
+                    count += self.grid[ni][nj]
+
+                elif self.boundary_condition == 'Infinite':
+                    count += infinite_boundary(i, j)
+
         return count
     def save_pattern(self):
         """Save the current grid pattern to a file."""
