@@ -5,6 +5,7 @@
     <img src="https://img.shields.io/badge/Download-Latest%20Release-blue" alt="Download Latest Release">
   </a>
 </div>
+
 ## Project Overview
 **Title**: Conway's Game of Life    
 **Competition**: Software Engineering Competition (Semi-finals)
