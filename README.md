@@ -1,4 +1,4 @@
-# Resume: Conway's Game of Life
+# Conway's Game of Life
 
 <div align="center">
   <a href="https://github.com/Oxshady/dragons-game-of-life/releases/tag/v1.2">
@@ -8,13 +8,14 @@
 
 ## Project Overview
 **Title**: Conway's Game of Life    
-**Competition**: Software Engineering Competition (Semi-finals)
+**Competition**: Software Engineering Competition (ALX SE CUP Semi-finals)
 
 ## Project Description
 This project is an implementation of Conway's Game of Life, a cellular automaton devised by the mathematician John Conway. The application is built using Python and the Tkinter library, providing an interactive interface where users can visualize and interact with the game's mechanics.
 
 ## Live demo using ***Tkinter***
-![Game_of_life_video](./assets/GameOfLife_tkinter.mp4)
+[![Watch the video](https://raw.githubusercontent.com/Oxshady/dragons-game-of-life/assets/thumbnail.jpg)](https://github.com/Oxshady/dragons-game-of-life/assets/GameOfLife_tkinter.mp4)
+
 
 ## Features
 - **User Interface**: A clean and intuitive UI built with Tkinter, allowing users to navigate easily between the lobby, settings, and game screens.
