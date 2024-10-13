@@ -27,7 +27,10 @@ class GameOfLife:
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
 
         self.alive_cells = sum(sum(row) for row in self.grid)
-        self.canvas.bind("<Button-1>", self.toggle_cell)
+        self.is_drawing = False
+        self.canvas.bind("<ButtonPress-1>", self.start_drawing)
+        self.canvas.bind("<B1-Motion>", self.draw_cells)
+        self.canvas.bind("<ButtonRelease-1>", self.stop_drawing)
 
         self.slider_frame = ctk.CTkFrame(frame)
         self.slider_frame.pack(pady=10)
@@ -108,6 +111,17 @@ class GameOfLife:
             play_sound_in_thread("sound_effects/click_cell.wav")
             self.update_info_display()
             self.update_canvas()
+
+    def start_drawing(self, event):
+        self.is_drawing = True
+        self.toggle_cell(event)  
+
+    def draw_cells(self, event):
+        if self.is_drawing:
+            self.toggle_cell(event)
+
+    def stop_drawing(self, event):
+        self.is_drawing = False
 
     def draw_grid(self):
         for i in range(self.rows):
