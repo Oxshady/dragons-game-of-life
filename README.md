@@ -24,7 +24,7 @@ https://github.com/user-attachments/assets/ba47420e-93e8-4cc9-aeb5-9bbcb99249cf
   - Start and Stop buttons to control the game's execution.
   - Reset functionality to clear the grid and start anew.
   - Randomize button to populate the grid with random cell states.
-- **Interactive Grid**: Clickable grid cells that allow users to toggle between alive and dead states.
+- **Interactive Grid**: Clickable grid cells that allow users to toggle between alive and dead states and also draw pattern on grid.
 - **Dynamic Updates**: The game updates the grid based on the rules of Conway's Game of Life, providing a real-time visualization of cell evolution.
 
 ## Technical Stack
