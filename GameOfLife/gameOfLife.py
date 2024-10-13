@@ -16,6 +16,7 @@ class GameOfLife:
         self.cols = cols
         self.cell_size = cell_size
         self.is_running = False
+        self.generation = 0
         pygame.mixer.init()
         pygame.mixer.music.set_volume(1.0)
 
@@ -25,6 +26,7 @@ class GameOfLife:
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
 
+        self.alive_cells = sum(sum(row) for row in self.grid)
         self.canvas.bind("<Button-1>", self.toggle_cell)
 
         self.slider_frame = ctk.CTkFrame(frame)
@@ -44,6 +46,11 @@ class GameOfLife:
 
         self.color_frame = ctk.CTkFrame(frame)
         self.color_frame.pack(pady=10)
+
+        # Add info display
+        self.info_var = ctk.StringVar(value="Generation: 0 | Alive Cells: 0")
+        self.info_label = ctk.CTkLabel(frame, textvariable=self.info_var, font=("Arial", 14))
+        self.info_label.pack(pady=10)
 
         self.alive_color = 'black'
         self.dead_color = 'white'
@@ -80,7 +87,7 @@ class GameOfLife:
 
         self.draw_grid()
         self.update_canvas()
-        print(type(self.frame))
+        self.update_info_display()
 
 
     def return_to_lobby(self):
@@ -96,7 +103,10 @@ class GameOfLife:
         col = x // self.cell_size
         if 0 <= row < self.rows and 0 <= col < self.cols:
             self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
+            # Update alive cells count
+            self.alive_cells += 1 if self.grid[row][col] == 1 else -1
             play_sound_in_thread("sound_effects/click_cell.wav")
+            self.update_info_display()
             self.update_canvas()
 
     def draw_grid(self):
@@ -121,6 +131,12 @@ class GameOfLife:
         self.grid = [[random.choice([0, 1]) for _ in range(cols)] for _ in range(rows)]
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
+        
+        # Reset generation and count alive cells
+        self.generation = 0
+        self.alive_cells = sum(sum(row) for row in self.grid)
+        
+        self.update_info_display()
         self.update_canvas()
 
     def zoom_grid(self, value):
@@ -170,13 +186,21 @@ class GameOfLife:
 
     def clear_grid(self):
         self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        self.generation = 0
+        self.alive_cells = 0
+        self.update_info_display()
         self.update_canvas()
 
     def randomize_grid(self):
         self.grid = [[random.choice([0, 1]) for _ in range(self.cols)] for _ in range(self.rows)]
+        self.generation = 0
+        self.alive_cells = sum(sum(row) for row in self.grid)
+        self.update_info_display()
         self.update_canvas()
 
     def update_cells(self):
+        self.generation += 1
+        self.alive_cells = 0
         for i in range(self.rows):
             for j in range(self.cols):
                 live_neighbors = self.count_live_neighbors(i, j)
@@ -184,7 +208,12 @@ class GameOfLife:
                     self.temp_grid[i][j] = 1 if live_neighbors in (2, 3) else 0
                 else:
                     self.temp_grid[i][j] = 1 if live_neighbors == 3 else 0
+                self.alive_cells += self.temp_grid[i][j]
         self.grid, self.temp_grid = self.temp_grid, self.grid
+        self.update_info_display()
+
+    def update_info_display(self):
+        self.info_var.set(f"Generation: {self.generation} | Alive Cells: {self.alive_cells}")
 
     def count_live_neighbors(self, row, col):
         def finite_boundary(i, j):
