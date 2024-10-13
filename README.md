@@ -14,6 +14,9 @@
 ## Project Description
 This project is an implementation of Conway's Game of Life, a cellular automaton devised by the mathematician John Conway. The application is built using Python and the Tkinter library, providing an interactive interface where users can visualize and interact with the game's mechanics.
 
+## Live demo using ***CustomTkinter***
+https://github.com/user-attachments/assets/5e66f957-4bc1-4c5f-80c5-f2ac6ffee178
+
 ## Live demo using ***Tkinter***
 https://github.com/user-attachments/assets/ba47420e-93e8-4cc9-aeb5-9bbcb99249cf
 
@@ -24,7 +27,7 @@ https://github.com/user-attachments/assets/ba47420e-93e8-4cc9-aeb5-9bbcb99249cf
   - Start and Stop buttons to control the game's execution.
   - Reset functionality to clear the grid and start anew.
   - Randomize button to populate the grid with random cell states.
-- **Interactive Grid**: Clickable grid cells that allow users to toggle between alive and dead states.
+- **Interactive Grid**: Clickable grid cells that allow users to toggle between alive and dead states and also draw pattern on grid.
 - **Dynamic Updates**: The game updates the grid based on the rules of Conway's Game of Life, providing a real-time visualization of cell evolution.
 
 ## Technical Stack
