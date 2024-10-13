@@ -123,10 +123,12 @@ class GameOfLife:
         self.toggle_cell(event)  
 
     def draw_cells(self, event):
+        """Toggle cell state if drawing is active."""
         if self.is_drawing:
             self.toggle_cell(event)
 
     def stop_drawing(self, event):
+        """End drawing mode."""
         self.is_drawing = False
 
     def draw_grid(self):
