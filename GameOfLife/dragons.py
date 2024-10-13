@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import pygame
 from gameOfLife import GameOfLife
+from PIL import Image
 
 class Dragons:
     is_muted = False
@@ -249,7 +250,174 @@ class Dragons:
             self.current_game = GameOfLife(self.game_frame, self, rows, cols)
         else:
             self.current_game.update_grid(rows, cols)
+        
+        if not hasattr(self, 'pattern_library_created'):
+            self.create_pattern_library()
+            self.pattern_library_created = True
+        
         self.switch_frames(self.game)
+
+
+    def create_pattern_library(self):
+        library_frame = ctk.CTkFrame(self.game_frame)
+        library_frame.pack(side="right", fill="y", padx=10, pady=10)
+
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=400)
+        scroll_frame.pack(expand=True, fill="both")
+
+        patterns = {
+            "Glider": [
+                [0, 1, 0],
+                [0, 0, 1],
+                [1, 1, 1]
+            ],
+            "Blinker": [
+                [0, 1, 0],
+                [0, 1, 0],
+                [0, 1, 0]
+            ],
+            "Block": [
+                [1, 1],
+                [1, 1]
+            ],
+            "Beacon": [
+                [1, 1, 0, 0],
+                [1, 1, 0, 0],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1]
+            ],
+            "Toad": [
+                [0, 1, 1, 1],
+                [1, 1, 1, 0]
+            ],
+            "Pulsar": [
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0]
+            ],
+            "Beehive": [
+                [0, 1, 1, 0],
+                [1, 0, 0, 1],
+                [0, 1, 1, 0]
+            ],
+            "Loaf": [
+                [0, 1, 1, 0],
+                [1, 0, 0, 1],
+                [0, 1, 0, 1],
+                [0, 0, 1, 0]
+            ],
+            "Boat": [
+                [1, 1, 0],
+                [1, 0, 1],
+                [0, 1, 0]
+            ],
+            "Tub": [
+                [0, 1, 0],
+                [1, 0, 1],
+                [0, 1, 0]
+            ],
+            "Penta-decathlon": [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0],
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0],
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0]
+            ],
+            "Lightweight Spaceship": [
+                [0, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+                [1, 0, 0, 1, 0]
+            ],
+            "Middleweight Spaceship": [
+                [0, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1, 0]
+            ],
+            "Heavyweight Spaceship": [
+                [0, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0]
+            ]
+        }
+
+        for name, pattern in patterns.items():
+            pattern_frame = ctk.CTkFrame(scroll_frame)
+            pattern_frame.pack(pady=5, padx=5, fill="x")
+
+            pattern_label = ctk.CTkLabel(pattern_frame, text=name)
+            pattern_label.pack(side="left", padx=5)
+
+            preview = self.create_pattern_preview(pattern)
+            preview_label = ctk.CTkLabel(pattern_frame, image=preview, text="")
+            preview_label.pack(side="right", padx=5)
+
+            preview_label.bind("<ButtonPress-1>", lambda event, pat=pattern: self.start_drag(event, pat))
+            preview_label.bind("<B1-Motion>", self.drag)
+            preview_label.bind("<ButtonRelease-1>", self.stop_drag)
+
+
+    def create_pattern_preview(self, pattern):
+        cell_size = 10
+        width = len(pattern[0]) * cell_size
+        height = len(pattern) * cell_size
+        image = Image.new("RGB", (width, height), "white")
+        for i, row in enumerate(pattern):
+            for j, cell in enumerate(row):
+                if cell == 1:
+                    for x in range(j*cell_size, (j+1)*cell_size):
+                        for y in range(i*cell_size, (i+1)*cell_size):
+                            image.putpixel((x, y), (0, 0, 0))
+        return ctk.CTkImage(light_image=image, dark_image=image, size=(width, height))
+
+
+    def start_drag(self, event, pattern):
+        self.drag_data = {'x': event.x, 'y': event.y, 'pattern': pattern}
+        self.drag_preview = None
+
+    def drag(self, event):
+        if self.drag_preview:
+            self.current_game.canvas.delete(self.drag_preview)
+        
+        x = self.current_game.canvas.winfo_pointerx() - self.current_game.canvas.winfo_rootx()
+        y = self.current_game.canvas.winfo_pointery() - self.current_game.canvas.winfo_rooty()
+        
+        cell_size = self.current_game.cell_size
+        rows, cols = len(self.drag_data['pattern']), len(self.drag_data['pattern'][0])
+        
+        self.drag_preview = self.current_game.canvas.create_rectangle(
+            x, y, x + cols * cell_size, y + rows * cell_size,
+            fill='gray', stipple='gray50'
+        )
+
+
+    def stop_drag(self, event):
+        if self.drag_preview:
+            self.current_game.canvas.delete(self.drag_preview)
+        
+        x = self.current_game.canvas.winfo_pointerx() - self.current_game.canvas.winfo_rootx()
+        y = self.current_game.canvas.winfo_pointery() - self.current_game.canvas.winfo_rooty()
+        
+        self.current_game.place_pattern(x, y, self.drag_data['pattern'])
+        self.drag_data = None
+
+
 
     def switch_frames(self, frame):
         frame.tkraise()

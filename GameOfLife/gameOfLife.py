@@ -145,6 +145,19 @@ class GameOfLife:
                                               (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                               fill=color, outline="#ccc")
 
+    def place_pattern(self, x, y, pattern):
+        start_row = y // self.cell_size
+        start_col = x // self.cell_size
+        for i, row in enumerate(pattern):
+            for j, cell in enumerate(row):
+                grid_row = start_row + i
+                grid_col = start_col + j
+                if 0 <= grid_row < self.rows and 0 <= grid_col < self.cols:
+                    self.grid[grid_row][grid_col] = cell
+        self.update_canvas()
+        self.update_info_display()
+
+
     def update_canvas(self):
         self.canvas.delete("all")
         self.draw_grid()
