@@ -1,182 +1,211 @@
-from tkinter import *
-from tkinter import ttk
-import pygame # Using pygame to handle sound effects and music 
+import customtkinter as ctk
+import pygame
+from gameOfLife import GameOfLife
+from PIL import Image
 
 class Dragons:
-    """The main application class for The Game of Life."""
-    root = Tk()
     is_muted = False
-    lobby = Frame(root, bg="#F0F0F0")
 
     def __init__(self):
-        """Initialize the Dragons class and configure the main application window."""
         pygame.mixer.init()
         pygame.mixer.music.set_volume(1.0)
-        self.root = self.__class__.root
+        self.root = ctk.CTk()
         self.config_root()
-        self.lobby = self.__class__.lobby
-        self.settings = Frame(self.root, bg="#F0F0F0")
-        self.game = Frame(self.root, bg="#F0F0F0")
-        self.rules = Frame(self.root, bg="#F0F0F0")
+        self.lobby = ctk.CTkFrame(self.root)
+        self.settings = ctk.CTkFrame(self.root)
+        self.game = ctk.CTkFrame(self.root)
+        self.rules = ctk.CTkFrame(self.root)
+        self.game_frame = ctk.CTkFrame(self.game)
+        self.game_frame.pack(fill="both", expand=True)
         self.frames_config()
         self.current_game = None
+        self.current_mode = "dark"  # Default mode
+        self.is_music_playing = True
+        self.volume = 0.5
         
         self.music_tracks = {
-            "Ahemd Kamel": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
-            "Cairokee": "./music/Cairokee - Law Kan 3andi Guitar _ كايروكي - لو كان عندي جيتار ( 128kbps ).mp3",
-            "Gipper Kings": "./music/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3",
-            "Ahmed Santa: Emna3-elklam": "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3",
-            "Ahmed Santa: Ahmed-santa": "./music/Ahmed Santa - Ahmed Santa  أحمد سانتا - أحمد سانتا (Prod. Mello) (Audio).mp3"
+            "Mac DeMarco - Heart to Heart": "./music/Heart To Heart.mp3",
+            "Duran Duran - Invisible": "./music/Duran Duran - INVISIBLE.mp3",
+            "Arctic Monkeys - Arabella": "./music/Arctic Monkeys - Arabella (Official Audio).mp3",
+            "Arctic Monkeys - Do I Wanna Know": "./music/Arctic Monkeys - Do I Wanna Know_ (Official Video).mp3",
+            "Arctic Monkeys - R U Mine": "./music/Arctic Monkeys - R U Mine_.mp3",
+            "Mac DeMarco - one more love song": "./music/Mac DeMarco  One More Love Song (Official Audio).mp3",
+            "Arctic Monkeys - Why'd You Only Call Me When You're High": "./music/Arctic Monkeys - Why'd You Only Call Me When You're High_.mp3",
+            "The Smiths - Back To The Old House": "./music/The Smiths - Back To The Old House (Official Audio).mp3",
+            "The Smiths - Heaven Knows I'm Miserable Now": "./music/The Smiths - Heaven Knows I'm Miserable Now.mp3",
+            "The Smiths - There Is A Light That Never Goes Out": "./music/There Is a Light That Never Goes Out (2011 Remaster).mp3"
         }
-        self.music_file = "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3"
+        self.music_file = "./music/Mac DeMarco  One More Love Song (Official Audio).mp3"
         
         self.run()
         self.app_loop()
 
     def config_root(self):
-        """Configure the main application window."""
+        """
+        Configures the main window (root) with title, size, resizability,
+        dark appearance mode, and blue color theme.
+        """
         self.root.title("The Game of Life")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
-        self.root.configure(bg="#F0F0F0")
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("blue")
 
     def frames_config(self):
-        """Configure the layout of the frames in the application."""
+        """
+        Configures the grid layout for the frames to occupy the same grid cell
+        and stretch to fill the available space. Allows frames to resize with the window.
+        """
         for frame in (self.lobby, self.settings, self.game, self.rules):
             frame.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
     def app_loop(self):
-        """Start the main application loop."""
         self.root.mainloop()
 
     def play_navigation_sound(self):
-        """Play sound of navigation"""
         self.play_sound_in_thread("sound_effects/navigate.wav")
 
     def lobby_page(self):
-        """Set up the lobby page with buttons to navigate to other pages."""
-        title = Label(self.lobby, text="The Game of Life", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
+        title = ctk.CTkLabel(self.lobby, text="The Game of Life", font=("Arial", 30, "bold"))
         title.pack(pady=(30, 10))
 
-        button_frame = Frame(self.lobby, bg="#F0F0F0")
+        button_frame = ctk.CTkFrame(self.lobby)
         button_frame.pack(pady=20)
 
-        start_button = Button(button_frame, text="Start Game", font=("Arial", 16), command=self.start_game, bg="#4CAF50", fg="white", relief=FLAT)
+        start_button = ctk.CTkButton(button_frame, text="Start Game", command=self.start_game)
         start_button.grid(row=0, column=0, padx=10, pady=10)
 
-        setting_button = Button(button_frame, text="Settings", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.settings)], bg="#2196F3", fg="white", relief=FLAT)
+        setting_button = ctk.CTkButton(button_frame, text="Settings", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.settings)])
         setting_button.grid(row=0, column=1, padx=10, pady=10)
 
-        rules_button = Button(button_frame, text="Rules", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)], bg="#FF9800", fg="white", relief=FLAT)
+        rules_button = ctk.CTkButton(button_frame, text="Rules", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)])
         rules_button.grid(row=0, column=2, padx=10, pady=10)
 
-        quit_button = Button(button_frame, text="Quit", font=("Arial", 16), command=lambda: [self.play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)], bg="#F44336", fg="white", relief=FLAT)
+        quit_button = ctk.CTkButton(button_frame, text="Quit", command=lambda: [self.play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)])
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
-        music_frame = Frame(self.lobby, bg="#F0F0F0")
+        music_frame = ctk.CTkFrame(self.lobby)
         music_frame.pack(pady=10)
 
-        self.current_music_label = Label(music_frame, text="Current Music: Ahmed Santa: Emna3-elklam", font=("Arial", 14), bg="#F0F0F0", fg="#333")
+        self.current_music_label = ctk.CTkLabel(music_frame, text="Current Music: Mac DeMarco - one more love song", font=("Arial", 14))
         self.current_music_label.pack(pady=5)
 
-        self.music_selection = ttk.Combobox(self.lobby, values=list(self.music_tracks.keys()), state="readonly")
+        self.music_selection = ctk.CTkOptionMenu(self.lobby, values=list(self.music_tracks.keys()), command=self.update_music_selection)
         self.music_selection.pack(pady=10)
-        self.music_selection.set("Ahmed Santa: Emna3-elklam")
-        self.music_selection.bind("<<ComboboxSelected>>", self.update_music_selection)
+        self.music_selection.set("Mac DeMarco - one more love song")
 
-        self.mute_button = Button(self.lobby, text="Mute", font=("Arial", 16), command=self.toggle_mute, bg="#ff5722", fg="white", relief=FLAT)
-        self.mute_button.pack(pady=10, padx=20, fill=X)
+        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_music_playing else "Unmute", command=self.toggle_music)
+        self.mute_button.pack(pady=10, padx=20)
 
         self.play_music()
 
-
-    def update_music_selection(self, event):
-        selected_track = self.music_selection.get()
-        self.music_file = self.music_tracks[selected_track]
+    def update_music_selection(self, choice):
+        self.music_file = self.music_tracks[choice]
         self.play_music()
-
-    def toggle_mute(self):
-        if not self.is_muted:
-            pygame.mixer.music.set_volume(0)
-            self.mute_button.config(text="Unmute")
-            self.play_sound_in_thread("sound_effects/click2.wav")
-        else:
-            pygame.mixer.music.set_volume(1)
-            self.mute_button.config(text="Mute")
-            self.play_sound_in_thread("sound_effects/click2.wav")
-        self.is_muted = not self.is_muted
-
-        # Stop music if muted or resume if unmuted
-        if self.is_muted:
-            pygame.mixer.music.pause()
-        else:
-            pygame.mixer.music.unpause()
+        self.current_music_label.configure(text=f"Current Music: {choice}")
 
     def play_music(self):
-        """Play the background music."""
-        if not self.is_muted:
+        if not self.is_muted and self.is_music_playing:
             try:
                 pygame.mixer.music.load(self.music_file)
-                pygame.mixer.music.play(-1)
+                pygame.mixer.music.play(-1)  # Loop indefinitely
+                pygame.mixer.music.set_volume(self.volume)
             except Exception as e:
-                print(f"Error playing music: {e}") 
+                print(f"Error playing music: {e}")
 
-    def stop_music(self):
-        pygame.mixer.music.stop()
 
     def setting_page(self):
-        """Set up the settings page with options to configure the game grid."""
-        title = Label(self.settings, text="Settings", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
+        title = ctk.CTkLabel(self.settings, text="Settings", font=("Arial", 30, "bold"))
         title.pack(pady=(30, 10))
 
-        entry_frame = Frame(self.settings, bg="#F0F0F0")
+        entry_frame = ctk.CTkFrame(self.settings)
         entry_frame.pack(pady=20)
 
-        # Width and height labels
-        width_label = Label(entry_frame, text="Width", font=("Arial", 14), bg="#F0F0F0")
+        width_label = ctk.CTkLabel(entry_frame, text="Width", font=("Arial", 14))
         width_label.grid(row=0, column=0, padx=5)
 
-        height_label = Label(entry_frame, text="Height", font=("Arial", 14), bg="#F0F0F0")
+        height_label = ctk.CTkLabel(entry_frame, text="Height", font=("Arial", 14))
         height_label.grid(row=0, column=1, padx=5)
 
-        self.rows_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
+        self.rows_entry = ctk.CTkEntry(entry_frame, width=80, font=("Arial", 14), justify='center')
         self.rows_entry.insert(0, "20")
         self.rows_entry.grid(row=1, column=0, padx=5)
 
-        self.cols_entry = Entry(entry_frame, width=5, font=("Arial", 14), justify='center')
+        self.cols_entry = ctk.CTkEntry(entry_frame, width=80, font=("Arial", 14), justify='center')
         self.cols_entry.insert(0, "20")
         self.cols_entry.grid(row=1, column=1, padx=5)
 
-        apply_button = Button(self.settings, text="Apply", font=("Arial", 14), command=self.apply_settings, bg="#4CAF50", fg="white", relief=FLAT)
+        # Add mode selection
+        mode_label = ctk.CTkLabel(entry_frame, text="App Mode", font=("Arial", 14))
+        mode_label.grid(row=2, column=0, columnspan=2, padx=5, pady=(20, 5))
+
+        self.mode_var = ctk.StringVar(value=self.current_mode.capitalize())
+        self.mode_menu = ctk.CTkOptionMenu(
+            entry_frame, 
+            values=["Dark", "Light"],
+            variable=self.mode_var,
+            command=self.change_mode
+        )
+        self.mode_menu.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+
+        # Music controls
+        music_frame = ctk.CTkFrame(self.settings)
+        music_frame.pack(pady=10)
+
+        self.music_button = ctk.CTkButton(music_frame, text="Stop Music" if self.is_music_playing else "Start Music", 
+                                          command=self.toggle_music)
+        self.music_button.pack(side=ctk.LEFT, padx=10)
+
+        self.volume_slider = ctk.CTkSlider(music_frame, from_=0, to=1, number_of_steps=10,
+                                           command=self.change_volume)
+        self.volume_slider.set(self.volume)
+        self.volume_slider.pack(side=ctk.LEFT, padx=10)
+
+        volume_label = ctk.CTkLabel(music_frame, text="Volume")
+        volume_label.pack(side=ctk.LEFT, padx=5)
+
+        apply_button = ctk.CTkButton(self.settings, text="Apply", command=self.apply_settings)
         apply_button.pack(pady=10)
 
-        return_button_music = Button(self.settings, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
+        return_button_music = ctk.CTkButton(self.settings, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)])
         return_button_music.pack(pady=10)
 
-        stop_button_music = Button(self.settings, text="Stop Music", font=("Arial", 16), command=lambda: [self.play_sound_in_thread("./sound_effects/click2.wav"), self.stop_music()], bg="#FF5722", fg="white", relief=FLAT)
-        stop_button_music.pack(pady=10)
 
+    def toggle_music(self):
+        if self.is_music_playing:
+            pygame.mixer.music.pause()
+            self.music_button.configure(text="Start Music")
+            self.mute_button.configure(text="Unmute")
+            self.is_music_playing = False
+        else:
+            pygame.mixer.music.unpause()
+            self.music_button.configure(text="Stop Music")
+            self.mute_button.configure(text="Mute")
+            self.is_music_playing = True
+        self.play_sound_in_thread("sound_effects/click2.wav")
+
+    def change_volume(self, value):
+        self.volume = float(value)
+        pygame.mixer.music.set_volume(self.volume)
 
     def rules_page(self):
-        """Set up the rules page with a description of the game rules."""
-        
-        title_frame = Frame(self.rules, bg="#F0F0F0")
+        title_frame = ctk.CTkFrame(self.rules)
         title_frame.pack(pady=(30, 10))
         
-        title = Label(title_frame, text="Game Rules", font=("Arial", 30, "bold"), bg="#F0F0F0", fg="#333")
+        title = ctk.CTkLabel(title_frame, text="Game Rules", font=("Arial", 30, "bold"))
         title.pack()
 
-        description_frame = Frame(self.rules, bg="#F0F0F0", padx=20, pady=20)
-        description_frame.pack(pady=(10, 10))
+        description_frame = ctk.CTkFrame(self.rules)
+        description_frame.pack(pady=(10, 10), padx=20)
 
         description = (
             "The Game of Life is a cellular automaton devised by the British mathematician John Conway in 1970.\n\n"
             "It consists of a grid of cells that live, die, or multiply based on a set of rules:\n"
         )
 
-        rules_label = Label(description_frame, text=description, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+        rules_label = ctk.CTkLabel(description_frame, text=description, font=("Arial", 14), wraplength=700, justify='left')
         rules_label.pack(anchor='w')
 
         rules_list = [
@@ -187,57 +216,227 @@ class Dragons:
         ]
         
         for rule in rules_list:
-            rule_label = Label(description_frame, text=rule, font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+            rule_label = ctk.CTkLabel(description_frame, text=rule, font=("Arial", 14), wraplength=700, justify='left')
             rule_label.pack(anchor='w')
 
-        conclusion_label = Label(description_frame, text="These rules determine the fate of each cell in each generation.", font=("Arial", 14), bg="#F0F0F0", fg="#333", wraplength=700, justify='left')
+        conclusion_label = ctk.CTkLabel(description_frame, text="These rules determine the fate of each cell in each generation.", font=("Arial", 14), wraplength=700, justify='left')
         conclusion_label.pack(anchor='w', pady=20)
 
-        return_button = Button(self.rules, text="Lobby", font=("Arial", 16), command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)], bg="#FF5722", fg="white", relief=FLAT)
+        return_button = ctk.CTkButton(self.rules, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)])
         return_button.pack(pady=20)
 
 
+    def change_mode(self, new_mode):
+        self.current_mode = new_mode.lower()
+        ctk.set_appearance_mode(self.current_mode)
+        self.play_sound_in_thread("sound_effects/click2.wav")
+
     def apply_settings(self):
-        """Apply the settings for the game grid and start the game."""
         try:
             rows = int(self.rows_entry.get())
             cols = int(self.cols_entry.get())
             self.game_page(rows, cols)
-            if self.current_game:
-                self.current_game.start_game()
-            if self.is_muted:
+            if not self.current_game:
+                self.current_game.toggle_game()  # Stop the game if it's running
+            self.change_mode(self.mode_var.get())  # Apply the selected mode
+            self.play_music()  # Restart music with new settings
+            if not self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
 
     def game_page(self, rows=20, cols=20):
-        """Set up the game page with the specified grid size."""
         if self.current_game is None:
-            from gameOfLife import GameOfLife
-            self.current_game = GameOfLife(self.game, rows, cols)
+            self.current_game = GameOfLife(self.game_frame, self, rows, cols)
         else:
             self.current_game.update_grid(rows, cols)
+        
+        if not hasattr(self, 'pattern_library_created'):
+            self.create_pattern_library()
+            self.pattern_library_created = True
+        
         self.switch_frames(self.game)
 
+
+    def create_pattern_library(self):
+        library_frame = ctk.CTkFrame(self.game_frame)
+        library_frame.place(relx=1.0, y=10, anchor="ne")
+
+
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=390)
+        scroll_frame.pack(expand=True, fill="both")
+
+        patterns = {
+            "Glider": [
+                [0, 1, 0],
+                [0, 0, 1],
+                [1, 1, 1]
+            ],
+            "Blinker": [
+                [0, 1, 0],
+                [0, 1, 0],
+                [0, 1, 0]
+            ],
+            "Block": [
+                [1, 1],
+                [1, 1]
+            ],
+            "Beacon": [
+                [1, 1, 0, 0],
+                [1, 1, 0, 0],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1]
+            ],
+            "Toad": [
+                [0, 1, 1, 1],
+                [1, 1, 1, 0]
+            ],
+            "Pulsar": [
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0]
+            ],
+            "Beehive": [
+                [0, 1, 1, 0],
+                [1, 0, 0, 1],
+                [0, 1, 1, 0]
+            ],
+            "Loaf": [
+                [0, 1, 1, 0],
+                [1, 0, 0, 1],
+                [0, 1, 0, 1],
+                [0, 0, 1, 0]
+            ],
+            "Boat": [
+                [1, 1, 0],
+                [1, 0, 1],
+                [0, 1, 0]
+            ],
+            "Tub": [
+                [0, 1, 0],
+                [1, 0, 1],
+                [0, 1, 0]
+            ],
+            "Penta-decathlon": [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0],
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0],
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0]
+            ],
+            "Lightweight Spaceship": [
+                [0, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+                [1, 0, 0, 1, 0]
+            ],
+            "Middleweight Spaceship": [
+                [0, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 1, 0]
+            ],
+            "Heavyweight Spaceship": [
+                [0, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0]
+            ]
+        }
+
+        for name, pattern in patterns.items():
+            pattern_frame = ctk.CTkFrame(scroll_frame)
+            pattern_frame.pack(pady=5, padx=5, fill="x")
+
+            pattern_label = ctk.CTkLabel(pattern_frame, text=name)
+            pattern_label.pack(side="left", padx=5)
+
+            preview = self.create_pattern_preview(pattern)
+            preview_label = ctk.CTkLabel(pattern_frame, image=preview, text="")
+            preview_label.pack(side="right", padx=5)
+
+            preview_label.bind("<ButtonPress-1>", lambda event, pat=pattern: self.start_drag(event, pat))
+            preview_label.bind("<B1-Motion>", self.drag)
+            preview_label.bind("<ButtonRelease-1>", self.stop_drag)
+
+
+    def create_pattern_preview(self, pattern):
+        cell_size = 10
+        width = len(pattern[0]) * cell_size
+        height = len(pattern) * cell_size
+        image = Image.new("RGB", (width, height), "white")
+        for i, row in enumerate(pattern):
+            for j, cell in enumerate(row):
+                if cell == 1:
+                    for x in range(j*cell_size, (j+1)*cell_size):
+                        for y in range(i*cell_size, (i+1)*cell_size):
+                            image.putpixel((x, y), (0, 0, 0))
+        return ctk.CTkImage(light_image=image, dark_image=image, size=(width, height))
+
+
+    def start_drag(self, event, pattern):
+        self.drag_data = {'x': event.x, 'y': event.y, 'pattern': pattern}
+        self.drag_preview = None
+
+    def drag(self, event):
+        if self.drag_preview:
+            self.current_game.canvas.delete(self.drag_preview)
+        
+        x = self.current_game.canvas.winfo_pointerx() - self.current_game.canvas.winfo_rootx()
+        y = self.current_game.canvas.winfo_pointery() - self.current_game.canvas.winfo_rooty()
+        
+        cell_size = self.current_game.cell_size
+        rows, cols = len(self.drag_data['pattern']), len(self.drag_data['pattern'][0])
+        
+        self.drag_preview = self.current_game.canvas.create_rectangle(
+            x, y, x + cols * cell_size, y + rows * cell_size,
+            fill='gray', stipple='gray50'
+        )
+
+
+    def stop_drag(self, event):
+        if self.drag_preview:
+            self.current_game.canvas.delete(self.drag_preview)
+        
+        x = self.current_game.canvas.winfo_pointerx() - self.current_game.canvas.winfo_rootx()
+        y = self.current_game.canvas.winfo_pointery() - self.current_game.canvas.winfo_rooty()
+        
+        self.current_game.place_pattern(x, y, self.drag_data['pattern'])
+        self.drag_data = None
+
+
+
     def switch_frames(self, frame):
-        """Switch to the specified frame."""
         frame.tkraise()
 
     def start_game(self):
-        """Start the game by setting up the game page."""
         if self.is_muted:
             self.play_sound_in_thread("sound_effects/start_game2.mp3")
         self.game_page()
 
     def play_sound_in_thread(self, sound_file):
-        """Load and play sound effect using pygame.mixer"""
         sound = pygame.mixer.Sound(sound_file)
         sound.play()
 
     def run(self):
-        """Run the application by setting up all pages and showing the lobby page."""
         self.lobby_page()
         self.setting_page()
         self.rules_page()
         self.switch_frames(self.lobby)
 
+if __name__ == "__main__":
+    Dragons()
