@@ -46,7 +46,7 @@ class Dragons:
         dark appearance mode, and blue color theme.
         """
         self.root.title("The Game of Life")
-        self.root.geometry("900x700")
+        self.root.geometry("1400x700")
         self.root.resizable(True, True)
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
