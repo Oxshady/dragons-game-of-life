@@ -28,6 +28,7 @@ class GameOfLife:
 
         self.alive_cells = sum(sum(row) for row in self.grid)
         self.is_drawing = False
+        self.last_toggled_cell = None
         self.canvas.bind("<ButtonPress-1>", self.start_drawing)
         self.canvas.bind("<B1-Motion>", self.draw_cells)
         self.canvas.bind("<ButtonRelease-1>", self.stop_drawing)
@@ -105,12 +106,14 @@ class GameOfLife:
         row = y // self.cell_size
         col = x // self.cell_size
         if 0 <= row < self.rows and 0 <= col < self.cols:
-            self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
-            # Update alive cells count
-            self.alive_cells += 1 if self.grid[row][col] == 1 else -1
-            play_sound_in_thread("sound_effects/click_cell.wav")
-            self.update_info_display()
-            self.update_canvas()
+            current_cell = (row, col)
+            if current_cell != self.last_toggled_cell:
+                self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
+                self.alive_cells += 1 if self.grid[row][col] == 1 else -1
+                play_sound_in_thread("sound_effects/click_cell.wav")
+                self.update_info_display()
+                self.update_canvas()
+                self.last_toggled_cell = current_cell
 
     def start_drawing(self, event):
         """
