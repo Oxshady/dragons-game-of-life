@@ -19,6 +19,8 @@ class Dragons:
         self.frames_config()
         self.current_game = None
         self.current_mode = "dark"  # Default mode
+        self.is_music_playing = True
+        self.volume = 1.0
         
         self.music_tracks = {
             "Ahemd Kamel": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
@@ -80,7 +82,7 @@ class Dragons:
         self.music_selection.pack(pady=10)
         self.music_selection.set("Ahmed Santa: Emna3-elklam")
 
-        self.mute_button = ctk.CTkButton(self.lobby, text="Mute", command=self.toggle_mute)
+        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_music_playing else "Unmute", command=self.toggle_music)
         self.mute_button.pack(pady=10, padx=20)
 
         self.play_music()
@@ -90,32 +92,15 @@ class Dragons:
         self.play_music()
         self.current_music_label.configure(text=f"Current Music: {choice}")
 
-    def toggle_mute(self):
-        if not self.is_muted:
-            pygame.mixer.music.set_volume(0)
-            self.mute_button.configure(text="Unmute")
-            self.play_sound_in_thread("sound_effects/click2.wav")
-        else:
-            pygame.mixer.music.set_volume(1)
-            self.mute_button.configure(text="Mute")
-            self.play_sound_in_thread("sound_effects/click2.wav")
-        self.is_muted = not self.is_muted
-
-        if self.is_muted:
-            pygame.mixer.music.pause()
-        else:
-            pygame.mixer.music.unpause()
-
     def play_music(self):
-        if not self.is_muted:
+        if not self.is_muted and self.is_music_playing:
             try:
                 pygame.mixer.music.load(self.music_file)
-                pygame.mixer.music.play(-1)
+                pygame.mixer.music.play(-1)  # Loop indefinitely
+                pygame.mixer.music.set_volume(self.volume)
             except Exception as e:
                 print(f"Error playing music: {e}")
 
-    def stop_music(self):
-        pygame.mixer.music.stop()
 
     def setting_page(self):
         title = ctk.CTkLabel(self.settings, text="Settings", font=("Arial", 30, "bold"))
@@ -151,14 +136,45 @@ class Dragons:
         )
         self.mode_menu.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
+        # Music controls
+        music_frame = ctk.CTkFrame(self.settings)
+        music_frame.pack(pady=10)
+
+        self.music_button = ctk.CTkButton(music_frame, text="Stop Music" if self.is_music_playing else "Start Music", 
+                                          command=self.toggle_music)
+        self.music_button.pack(side=ctk.LEFT, padx=10)
+
+        self.volume_slider = ctk.CTkSlider(music_frame, from_=0, to=1, number_of_steps=10,
+                                           command=self.change_volume)
+        self.volume_slider.set(self.volume)
+        self.volume_slider.pack(side=ctk.LEFT, padx=10)
+
+        volume_label = ctk.CTkLabel(music_frame, text="Volume")
+        volume_label.pack(side=ctk.LEFT, padx=5)
+
         apply_button = ctk.CTkButton(self.settings, text="Apply", command=self.apply_settings)
         apply_button.pack(pady=10)
 
         return_button_music = ctk.CTkButton(self.settings, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)])
         return_button_music.pack(pady=10)
 
-        stop_button_music = ctk.CTkButton(self.settings, text="Stop Music", command=lambda: [self.play_sound_in_thread("./sound_effects/click2.wav"), self.stop_music()])
-        stop_button_music.pack(pady=10)
+
+    def toggle_music(self):
+        if self.is_music_playing:
+            pygame.mixer.music.pause()
+            self.music_button.configure(text="Start Music")
+            self.mute_button.configure(text="Unmute")
+            self.is_music_playing = False
+        else:
+            pygame.mixer.music.unpause()
+            self.music_button.configure(text="Stop Music")
+            self.mute_button.configure(text="Mute")
+            self.is_music_playing = True
+        self.play_sound_in_thread("sound_effects/click2.wav")
+
+    def change_volume(self, value):
+        self.volume = float(value)
+        pygame.mixer.music.set_volume(self.volume)
 
     def rules_page(self):
         title_frame = ctk.CTkFrame(self.rules)
@@ -207,9 +223,10 @@ class Dragons:
             cols = int(self.cols_entry.get())
             self.game_page(rows, cols)
             if not self.current_game:
-                self.current_game.toggle_game()  
-            self.change_mode(self.mode_var.get())  
-            if self.is_muted:
+                self.current_game.toggle_game()  # Stop the game if it's running
+            self.change_mode(self.mode_var.get())  # Apply the selected mode
+            self.play_music()  # Restart music with new settings
+            if not self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
