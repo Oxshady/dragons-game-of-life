@@ -113,6 +113,12 @@ class GameOfLife:
             self.update_canvas()
 
     def start_drawing(self, event):
+        """
+        Activates drawing mode on mouse press, toggling the cell state.
+
+        Parameters:
+        event (tkinter.Event): Mouse event with cursor position.
+        """
         self.is_drawing = True
         self.toggle_cell(event)  
 
