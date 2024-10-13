@@ -24,17 +24,15 @@ class Dragons:
         
         self.music_tracks = {
             "Mac DeMarco - Heart to Heart": "./music/Heart To Heart.mp3",
-            "Ahmed Kamel - Baad El Kalam": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
             "Duran Duran - Invisible": "./music/Duran Duran - INVISIBLE.mp3",
-            "Cairokee - Law Kan 3andi Guitar": "./music/Cairokee - Law Kan 3andi Guitar _ كايروكي - لو كان عندي جيتار ( 128kbps ).mp3",
             "Arctic Monkeys - Arabella": "./music/Arctic Monkeys - Arabella (Official Audio).mp3",
-            "Gipper Kings": "./music/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3",
             "Arctic Monkeys - Do I Wanna Know": "./music/Arctic Monkeys - Do I Wanna Know_ (Official Video).mp3",
-            "Ahmed Santa: Emna3-elklam": "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3",
             "Arctic Monkeys - R U Mine": "./music/Arctic Monkeys - R U Mine_.mp3",
-            "Ahmed Santa: Ahmed-santa": "./music/Ahmed Santa - Ahmed Santa  أحمد سانتا - أحمد سانتا (Prod. Mello) (Audio).mp3",
             "Mac DeMarco - one more love song": "./music/Mac DeMarco  One More Love Song (Official Audio).mp3",
             "Arctic Monkeys - Why'd You Only Call Me When You're High": "./music/Arctic Monkeys - Why'd You Only Call Me When You're High_.mp3",
+            "The Smiths - Back To The Old House": "./music/The Smiths - Back To The Old House.mp3",
+            "The Smiths - Heaven Knows I'm Miserable Now": "./music/The Smiths - Heaven Knows I'm Miserable Now.mp3",
+            "The Smiths - There Is A Light That Never Goes Out": "./music/The Smiths - There Is A Light That Never Goes Out.mp3"
         }
         self.music_file = "./music/Mac DeMarco  One More Love Song (Official Audio).mp3"
         
