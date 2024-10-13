@@ -4,8 +4,8 @@ from gameOfLife import GameOfLife
 from PIL import Image
 
 class Dragons:
-    is_muted = False
-
+    '''This class contains the main components of the game
+    including the home page, settings, and game start functionality'''
     def __init__(self):
         pygame.mixer.init()
         pygame.mixer.music.set_volume(1.0)
@@ -20,7 +20,7 @@ class Dragons:
         self.frames_config()
         self.current_game = None
         self.current_mode = "dark"  # Default mode
-        self.is_music_playing = True
+        self.is_muted = False
         self.volume = 0.5
         
         self.music_tracks = {
@@ -96,7 +96,7 @@ class Dragons:
         self.music_selection.pack(pady=10)
         self.music_selection.set("Mac DeMarco - one more love song")
 
-        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_music_playing else "Unmute", command=self.toggle_music)
+        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_muted else "Unmute", command=self.toggle_music)
         self.mute_button.pack(pady=10, padx=20)
 
         self.play_music()
@@ -107,11 +107,14 @@ class Dragons:
         self.current_music_label.configure(text=f"Current Music: {choice}")
 
     def play_music(self):
-        if not self.is_muted and self.is_music_playing:
+        if not self.is_muted:
             try:
-                pygame.mixer.music.load(self.music_file)
-                pygame.mixer.music.play(-1)  # Loop indefinitely
-                pygame.mixer.music.set_volume(self.volume)
+                if pygame.mixer.music.get_busy():  # Check if music is already playing
+                    pygame.mixer.music.set_volume(self.volume)  # Only adjust volume
+                else:
+                    pygame.mixer.music.load(self.music_file)  # Load the music if it's not playing
+                    pygame.mixer.music.play(-1)  # Loop indefinitely
+                    pygame.mixer.music.set_volume(self.volume)
             except Exception as e:
                 print(f"Error playing music: {e}")
 
@@ -154,7 +157,7 @@ class Dragons:
         music_frame = ctk.CTkFrame(self.settings)
         music_frame.pack(pady=10)
 
-        self.music_button = ctk.CTkButton(music_frame, text="Stop Music" if self.is_music_playing else "Start Music", 
+        self.music_button = ctk.CTkButton(music_frame, text="Stop Music" if self.is_muted else "Start Music", 
                                           command=self.toggle_music)
         self.music_button.pack(side=ctk.LEFT, padx=10)
 
@@ -174,17 +177,24 @@ class Dragons:
 
 
     def toggle_music(self):
-        if self.is_music_playing:
-            pygame.mixer.music.pause()
+        if not self.is_muted:
+            pygame.mixer.music.set_volume(0)
             self.music_button.configure(text="Start Music")
             self.mute_button.configure(text="Unmute")
-            self.is_music_playing = False
+            self.is_muted = False
         else:
-            pygame.mixer.music.unpause()
+            pygame.mixer.music.set_volume(1)
             self.music_button.configure(text="Stop Music")
             self.mute_button.configure(text="Mute")
-            self.is_music_playing = True
+            self.is_muted = True
         self.play_sound_in_thread("sound_effects/click2.wav")
+        self.is_muted = not self.is_muted
+
+        # Stop music if muted or resume if unmuted
+        if self.is_muted:
+            pygame.mixer.music.pause()
+        else:
+            pygame.mixer.music.unpause()
 
     def change_volume(self, value):
         self.volume = float(value)
@@ -240,7 +250,7 @@ class Dragons:
                 self.current_game.toggle_game()  # Stop the game if it's running
             self.change_mode(self.mode_var.get())  # Apply the selected mode
             self.play_music()  # Restart music with new settings
-            if not self.is_muted:
+            if self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
             pass
