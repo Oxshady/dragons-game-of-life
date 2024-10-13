@@ -20,16 +20,23 @@ class Dragons:
         self.current_game = None
         self.current_mode = "dark"  # Default mode
         self.is_music_playing = True
-        self.volume = 1.0
+        self.volume = 0.5
         
         self.music_tracks = {
-            "Ahemd Kamel": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
-            "Cairokee": "./music/Cairokee - Law Kan 3andi Guitar _ كايروكي - لو كان عندي جيتار ( 128kbps ).mp3",
+            "Mac DeMarco - Heart to Heart": "./music/Heart To Heart.mp3",
+            "Ahmed Kamel - Baad El Kalam": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
+            "Duran Duran - Invisible": "./music/Duran Duran - INVISIBLE.mp3",
+            "Cairokee - Law Kan 3andi Guitar": "./music/Cairokee - Law Kan 3andi Guitar _ كايروكي - لو كان عندي جيتار ( 128kbps ).mp3",
+            "Arctic Monkeys - Arabella": "./music/Arctic Monkeys - Arabella (Official Audio).mp3",
             "Gipper Kings": "./music/Gipsy Kings - Volare (Nel blu dipinto di blu)(MP3_70K).mp3",
+            "Arctic Monkeys - Do I Wanna Know": "./music/Arctic Monkeys - Do I Wanna Know_ (Official Video).mp3",
             "Ahmed Santa: Emna3-elklam": "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3",
-            "Ahmed Santa: Ahmed-santa": "./music/Ahmed Santa - Ahmed Santa  أحمد سانتا - أحمد سانتا (Prod. Mello) (Audio).mp3"
+            "Arctic Monkeys - R U Mine": "./music/Arctic Monkeys - R U Mine_.mp3",
+            "Ahmed Santa: Ahmed-santa": "./music/Ahmed Santa - Ahmed Santa  أحمد سانتا - أحمد سانتا (Prod. Mello) (Audio).mp3",
+            "Mac DeMarco - one more love song": "./music/Mac DeMarco  One More Love Song (Official Audio).mp3",
+            "Arctic Monkeys - Why'd You Only Call Me When You're High": "./music/Arctic Monkeys - Why'd You Only Call Me When You're High_.mp3",
         }
-        self.music_file = "./music/Ahmed Santa - Emna3 El Kalam  أحمد سانتا - امنع الكلام (Official Audio) (Prod. Alfy).mp3"
+        self.music_file = "./music/Mac DeMarco  One More Love Song (Official Audio).mp3"
         
         self.run()
         self.app_loop()
@@ -75,12 +82,12 @@ class Dragons:
         music_frame = ctk.CTkFrame(self.lobby)
         music_frame.pack(pady=10)
 
-        self.current_music_label = ctk.CTkLabel(music_frame, text="Current Music: Ahmed Santa: Emna3-elklam", font=("Arial", 14))
+        self.current_music_label = ctk.CTkLabel(music_frame, text="Current Music: Mac DeMarco - one more love song", font=("Arial", 14))
         self.current_music_label.pack(pady=5)
 
         self.music_selection = ctk.CTkOptionMenu(self.lobby, values=list(self.music_tracks.keys()), command=self.update_music_selection)
         self.music_selection.pack(pady=10)
-        self.music_selection.set("Ahmed Santa: Emna3-elklam")
+        self.music_selection.set("Mac DeMarco - one more love song")
 
         self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_music_playing else "Unmute", command=self.toggle_music)
         self.mute_button.pack(pady=10, padx=20)
