@@ -46,7 +46,7 @@ class Dragons:
         dark appearance mode, and blue color theme.
         """
         self.root.title("The Game of Life")
-        self.root.geometry("1400x700")
+        self.root.geometry("900x700")
         self.root.resizable(True, True)
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
@@ -263,7 +263,7 @@ class Dragons:
         library_frame.place(relx=1.0, y=10, anchor="ne")
 
 
-        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=390)
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=200)
         scroll_frame.pack(expand=True, fill="both")
 
         patterns = {
