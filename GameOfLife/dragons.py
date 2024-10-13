@@ -51,6 +51,10 @@ class Dragons:
         ctk.set_default_color_theme("blue")
 
     def frames_config(self):
+        """
+        Configures the grid layout for the frames to occupy the same grid cell
+        and stretch to fill the available space. Allows frames to resize with the window.
+        """
         for frame in (self.lobby, self.settings, self.game, self.rules):
             frame.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
