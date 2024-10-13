@@ -102,9 +102,9 @@ class GameOfLife:
             print("Error: Unable to return to lobby. Required attributes not found.")
 
     def toggle_cell(self, event):
-            """
-            Toggles the state of a cell in the grid based on a mouse click event.
-            """
+        """
+        Toggles the state of a cell in the grid based on a mouse click event.
+        """
         x, y = event.x, event.y
         row = y // self.cell_size
         col = x // self.cell_size
