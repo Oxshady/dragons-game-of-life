@@ -74,29 +74,34 @@ class Dragons:
         button_frame = ctk.CTkFrame(self.lobby)
         button_frame.pack(pady=20)
 
-        start_button = ctk.CTkButton(button_frame, text="Start Game", command=self.start_game)
+        start_button = ctk.CTkButton(button_frame, text="Start Game", command=self.start_game, fg_color="#2E7D32", hover_color="#4CAF50")
         start_button.grid(row=0, column=0, padx=10, pady=10)
 
-        setting_button = ctk.CTkButton(button_frame, text="Settings", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.settings)])
+        setting_button = ctk.CTkButton(button_frame, text="Settings", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.settings)],
+                                       fg_color="#1565C0", hover_color="#1976D2")
         setting_button.grid(row=0, column=1, padx=10, pady=10)
 
-        rules_button = ctk.CTkButton(button_frame, text="Rules", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)])
+        rules_button = ctk.CTkButton(button_frame, text="Rules", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.rules)],
+                                     fg_color="#6A1B9A", hover_color="#7B1FA2")
         rules_button.grid(row=0, column=2, padx=10, pady=10)
 
-        quit_button = ctk.CTkButton(button_frame, text="Quit", command=lambda: [self.play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)])
+        quit_button = ctk.CTkButton(button_frame, text="Quit", command=lambda: [self.play_sound_in_thread("sound_effects/exit3.wav"), self.root.after(200, self.root.quit)],
+                                    fg_color="#C62828", hover_color="#D32F2F")
         quit_button.grid(row=0, column=3, padx=10, pady=10)
 
         music_frame = ctk.CTkFrame(self.lobby)
         music_frame.pack(pady=10)
 
-        self.current_music_label = ctk.CTkLabel(music_frame, text="Current Music: Mac DeMarco - one more love song", font=("Arial", 14))
+        self.current_music_label = ctk.CTkLabel(music_frame, text="Current Music: Mac DeMarco - one more love song", font=("Arial", 14), text_color="#E0E0E0")
         self.current_music_label.pack(pady=5)
 
-        self.music_selection = ctk.CTkOptionMenu(self.lobby, values=list(self.music_tracks.keys()), command=self.update_music_selection)
+        self.music_selection = ctk.CTkOptionMenu(self.lobby, values=list(self.music_tracks.keys()), command=self.update_music_selection,
+                                                fg_color="#455A64", text_color="#FFFFFF")
         self.music_selection.pack(pady=10)
         self.music_selection.set("Mac DeMarco - one more love song")
 
-        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_muted else "Unmute", command=self.toggle_music)
+        self.mute_button = ctk.CTkButton(self.lobby, text="Mute" if self.is_muted else "Unmute", command=self.toggle_music,
+                                         fg_color="#757575", text_color="#FFFFFF")
         self.mute_button.pack(pady=10, padx=20)
 
         self.play_music()
@@ -158,21 +163,22 @@ class Dragons:
         music_frame.pack(pady=10)
 
         self.music_button = ctk.CTkButton(music_frame, text="Stop Music" if self.is_muted else "Start Music", 
-                                          command=self.toggle_music)
+                                          command=self.toggle_music, fg_color="#F4511E", hover_color="#FF7043")
         self.music_button.pack(side=ctk.LEFT, padx=10)
 
         self.volume_slider = ctk.CTkSlider(music_frame, from_=0, to=1, number_of_steps=10,
-                                           command=self.change_volume)
+                                           command=self.change_volume, fg_color="#455A64", progress_color="#1E88E5")
         self.volume_slider.set(self.volume)
         self.volume_slider.pack(side=ctk.LEFT, padx=10)
 
         volume_label = ctk.CTkLabel(music_frame, text="Volume")
         volume_label.pack(side=ctk.LEFT, padx=5)
 
-        apply_button = ctk.CTkButton(self.settings, text="Apply", command=self.apply_settings)
+        apply_button = ctk.CTkButton(self.settings, text="Apply", command=self.apply_settings, fg_color="#388E3C", hover_color="#4CAF50")
         apply_button.pack(pady=10)
 
-        return_button_music = ctk.CTkButton(self.settings, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)])
+        return_button_music = ctk.CTkButton(self.settings, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)],
+                                            fg_color="#455A64", hover_color="#607D8B")
         return_button_music.pack(pady=10)
 
 
@@ -273,7 +279,7 @@ class Dragons:
         library_frame.place(relx=1.0, y=10, anchor="ne")
 
 
-        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=200)
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=390)
         scroll_frame.pack(expand=True, fill="both")
 
         patterns = {
