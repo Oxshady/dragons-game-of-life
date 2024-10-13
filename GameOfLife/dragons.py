@@ -30,9 +30,9 @@ class Dragons:
             "Arctic Monkeys - R U Mine": "./music/Arctic Monkeys - R U Mine_.mp3",
             "Mac DeMarco - one more love song": "./music/Mac DeMarco  One More Love Song (Official Audio).mp3",
             "Arctic Monkeys - Why'd You Only Call Me When You're High": "./music/Arctic Monkeys - Why'd You Only Call Me When You're High_.mp3",
-            "The Smiths - Back To The Old House": "./music/The Smiths - Back To The Old House.mp3",
+            "The Smiths - Back To The Old House": "./music/The Smiths - Back To The Old House (Official Audio).mp3",
             "The Smiths - Heaven Knows I'm Miserable Now": "./music/The Smiths - Heaven Knows I'm Miserable Now.mp3",
-            "The Smiths - There Is A Light That Never Goes Out": "./music/The Smiths - There Is A Light That Never Goes Out.mp3"
+            "The Smiths - There Is A Light That Never Goes Out": "./music/There Is a Light That Never Goes Out (2011 Remaster).mp3"
         }
         self.music_file = "./music/Mac DeMarco  One More Love Song (Official Audio).mp3"
         
