@@ -153,6 +153,12 @@ class GameOfLife:
                 grid_row = start_row + i
                 grid_col = start_col + j
                 if 0 <= grid_row < self.rows and 0 <= grid_col < self.cols:
+                    # If we're changing a cell from dead to alive, increment alive_cells
+                    if self.grid[grid_row][grid_col] == 0 and cell == 1:
+                        self.alive_cells += 1
+                    # If we're changing a cell from alive to dead, decrement alive_cells
+                    elif self.grid[grid_row][grid_col] == 1 and cell == 0:
+                        self.alive_cells -= 1
                     self.grid[grid_row][grid_col] = cell
         self.update_canvas()
         self.update_info_display()

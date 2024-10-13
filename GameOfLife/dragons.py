@@ -260,9 +260,10 @@ class Dragons:
 
     def create_pattern_library(self):
         library_frame = ctk.CTkFrame(self.game_frame)
-        library_frame.pack(side="right", fill="y", padx=10, pady=10)
+        library_frame.place(relx=1.0, y=10, anchor="ne")
 
-        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=400)
+
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=390)
         scroll_frame.pack(expand=True, fill="both")
 
         patterns = {
