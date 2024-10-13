@@ -14,6 +14,8 @@ class Dragons:
         self.settings = ctk.CTkFrame(self.root)
         self.game = ctk.CTkFrame(self.root)
         self.rules = ctk.CTkFrame(self.root)
+        self.game_frame = ctk.CTkFrame(self.game)
+        self.game_frame.pack(fill="both", expand=True)
         self.frames_config()
         self.current_game = None
         
@@ -193,7 +195,7 @@ class Dragons:
 
     def game_page(self, rows=20, cols=20):
         if self.current_game is None:
-            self.current_game = GameOfLife(self.game, rows, cols)
+            self.current_game = GameOfLife(self.game_frame, self, rows, cols)
         else:
             self.current_game.update_grid(rows, cols)
         self.switch_frames(self.game)

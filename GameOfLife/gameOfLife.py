@@ -9,8 +9,9 @@ def play_sound_in_thread(sound_file):
     sound.play()
 
 class GameOfLife:
-    def __init__(self, frame, rows=20, cols=20, cell_size=20):
+    def __init__(self, frame, app, rows=20, cols=20, cell_size=20):
         self.frame = frame
+        self.app = app  # Reference to the Dragons instance
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
@@ -68,8 +69,7 @@ class GameOfLife:
         self.randomize_button = ctk.CTkButton(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")])
         self.randomize_button.grid(row=0, column=4, padx=5)
 
-        self.lobby_button = ctk.CTkButton(self.color_frame, text="Lobby", command=lambda: [self.frame.master.lobby.tkraise(), play_sound_in_thread("sound_effects/navigate.wav")])
-
+        self.lobby_button = ctk.CTkButton(self.color_frame, text="Lobby", command=self.return_to_lobby)
         self.lobby_button.grid(row=0, column=5, padx=5)
 
         save_button = ctk.CTkButton(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")])
@@ -80,8 +80,15 @@ class GameOfLife:
 
         self.draw_grid()
         self.update_canvas()
-        print(self.frame.master)
-        print(dir(self.frame.master))
+        print(type(self.frame))
+
+
+    def return_to_lobby(self):
+        if hasattr(self.app, 'switch_frames') and hasattr(self.app, 'lobby'):
+            self.app.switch_frames(self.app.lobby)
+            play_sound_in_thread("sound_effects/navigate.wav")
+        else:
+            print("Error: Unable to return to lobby. Required attributes not found.")
 
     def toggle_cell(self, event):
         x, y = event.x, event.y
