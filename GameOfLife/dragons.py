@@ -40,6 +40,10 @@ class Dragons:
         self.app_loop()
 
     def config_root(self):
+        """
+        Configures the main window (root) with title, size, resizability,
+        dark appearance mode, and blue color theme.
+        """
         self.root.title("The Game of Life")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
