@@ -18,6 +18,7 @@ class Dragons:
         self.game_frame.pack(fill="both", expand=True)
         self.frames_config()
         self.current_game = None
+        self.current_mode = "dark"  # Default mode
         
         self.music_tracks = {
             "Ahemd Kamel": "./music/Ahmed Kamel - Baad El Kalam  Official Lyrics Video - 2023  احمد كامل - بعد الكلام.mp3",
@@ -80,7 +81,7 @@ class Dragons:
         self.music_selection.set("Ahmed Santa: Emna3-elklam")
 
         self.mute_button = ctk.CTkButton(self.lobby, text="Mute", command=self.toggle_mute)
-        self.mute_button.pack(pady=10, padx=20, fill="x")
+        self.mute_button.pack(pady=10, padx=20)
 
         self.play_music()
 
@@ -137,6 +138,19 @@ class Dragons:
         self.cols_entry.insert(0, "20")
         self.cols_entry.grid(row=1, column=1, padx=5)
 
+        # Add mode selection
+        mode_label = ctk.CTkLabel(entry_frame, text="App Mode", font=("Arial", 14))
+        mode_label.grid(row=2, column=0, columnspan=2, padx=5, pady=(20, 5))
+
+        self.mode_var = ctk.StringVar(value=self.current_mode.capitalize())
+        self.mode_menu = ctk.CTkOptionMenu(
+            entry_frame, 
+            values=["Dark", "Light"],
+            variable=self.mode_var,
+            command=self.change_mode
+        )
+        self.mode_menu.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+
         apply_button = ctk.CTkButton(self.settings, text="Apply", command=self.apply_settings)
         apply_button.pack(pady=10)
 
@@ -181,13 +195,20 @@ class Dragons:
         return_button = ctk.CTkButton(self.rules, text="Lobby", command=lambda: [self.play_navigation_sound(), self.switch_frames(self.lobby)])
         return_button.pack(pady=20)
 
+
+    def change_mode(self, new_mode):
+        self.current_mode = new_mode.lower()
+        ctk.set_appearance_mode(self.current_mode)
+        self.play_sound_in_thread("sound_effects/click2.wav")
+
     def apply_settings(self):
         try:
             rows = int(self.rows_entry.get())
             cols = int(self.cols_entry.get())
             self.game_page(rows, cols)
-            if self.current_game:
-                self.current_game.toggle_game()
+            if not self.current_game:
+                self.current_game.toggle_game()  
+            self.change_mode(self.mode_var.get())  
             if self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:
