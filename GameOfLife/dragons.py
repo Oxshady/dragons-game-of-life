@@ -19,7 +19,7 @@ class Dragons:
         self.game_frame.pack(fill="both", expand=True)
         self.frames_config()
         self.current_game = None
-        self.current_mode = "dark"  # Default mode
+        self.current_mode = "dark"
         self.is_muted = False
         self.volume = 0.5
         
@@ -114,11 +114,11 @@ class Dragons:
     def play_music(self):
         if not self.is_muted:
             try:
-                if pygame.mixer.music.get_busy():  # Check if music is already playing
-                    pygame.mixer.music.set_volume(self.volume)  # Only adjust volume
+                if pygame.mixer.music.get_busy():
+                    pygame.mixer.music.set_volume(self.volume)
                 else:
-                    pygame.mixer.music.load(self.music_file)  # Load the music if it's not playing
-                    pygame.mixer.music.play(-1)  # Loop indefinitely
+                    pygame.mixer.music.load(self.music_file)
+                    pygame.mixer.music.play(-1)
                     pygame.mixer.music.set_volume(self.volume)
             except Exception as e:
                 print(f"Error playing music: {e}")
@@ -145,7 +145,6 @@ class Dragons:
         self.cols_entry.insert(0, "20")
         self.cols_entry.grid(row=1, column=1, padx=5)
 
-        # Add mode selection
         mode_label = ctk.CTkLabel(entry_frame, text="App Mode", font=("Arial", 14))
         mode_label.grid(row=2, column=0, columnspan=2, padx=5, pady=(20, 5))
 
@@ -158,7 +157,6 @@ class Dragons:
         )
         self.mode_menu.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
-        # Music controls
         music_frame = ctk.CTkFrame(self.settings)
         music_frame.pack(pady=10)
 
@@ -196,7 +194,6 @@ class Dragons:
         self.play_sound_in_thread("sound_effects/click2.wav")
         self.is_muted = not self.is_muted
 
-        # Stop music if muted or resume if unmuted
         if self.is_muted:
             pygame.mixer.music.pause()
         else:
@@ -253,9 +250,9 @@ class Dragons:
             cols = int(self.cols_entry.get())
             self.game_page(rows, cols)
             if not self.current_game:
-                self.current_game.toggle_game()  # Stop the game if it's running
-            self.change_mode(self.mode_var.get())  # Apply the selected mode
-            self.play_music()  # Restart music with new settings
+                self.current_game.toggle_game()
+            self.change_mode(self.mode_var.get())
+            self.play_music()
             if self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
         except ValueError:

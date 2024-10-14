@@ -9,9 +9,33 @@ def play_sound_in_thread(sound_file):
     sound.play()
 
 class GameOfLife:
+    """
+    A class to represent the Game of Life.
+
+    Attributes:
+    frame : tkinter.Frame
+        The frame in which the game is displayed.
+    app : tkinter.Tk
+        The main application instance.
+    rows : int
+        The number of rows in the grid.
+    cols : int
+        The number of columns in the grid.
+    cell_size : int
+        The size of each cell in the grid.
+    is_running : bool
+        A flag indicating whether the game is running.
+    generation : int
+        The current generation count.
+    canvas : tkinter.Canvas
+        The canvas on which the grid is drawn.
+    grid : list
+        The current state of the grid.
+    temp_grid : list
+        A temporary grid used for updates."""
     def __init__(self, frame, app, rows=20, cols=20, cell_size=20):
         self.frame = frame
-        self.app = app  # Reference to the Dragons instance
+        self.app = app
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
@@ -51,7 +75,6 @@ class GameOfLife:
         self.color_frame = ctk.CTkFrame(frame)
         self.color_frame.pack(pady=10)
 
-        # Add info display
         self.info_var = ctk.StringVar(value="Generation: 0 | Alive Cells: 0")
         self.info_label = ctk.CTkLabel(frame, textvariable=self.info_var, font=("Arial", 14))
         self.info_label.pack(pady=10)
@@ -161,10 +184,8 @@ class GameOfLife:
                 grid_row = start_row + i
                 grid_col = start_col + j
                 if 0 <= grid_row < self.rows and 0 <= grid_col < self.cols:
-                    # If we're changing a cell from dead to alive, increment alive_cells
                     if self.grid[grid_row][grid_col] == 0 and cell == 1:
                         self.alive_cells += 1
-                    # If we're changing a cell from alive to dead, decrement alive_cells
                     elif self.grid[grid_row][grid_col] == 1 and cell == 0:
                         self.alive_cells -= 1
                     self.grid[grid_row][grid_col] = cell
@@ -187,7 +208,6 @@ class GameOfLife:
         self.temp_grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.canvas.config(width=self.cols * self.cell_size, height=self.rows * self.cell_size)
         
-        # Reset generation and count alive cells
         self.generation = 0
         self.alive_cells = sum(sum(row) for row in self.grid)
         
