@@ -100,6 +100,7 @@ If you want to run the application locally on your terminal, follow these steps:
 
 ## Authors
 
+
 - **Karem Hany** - [GitHub Profile](https://github.com/K-a-r-e-e-m)
 - **Shadi Mahmoud** - [GitHub Profile](https://github.com/Oxshady)
 - **Youssef Ahmed** - [GitHub Profile](https://github.com/youssef3092004)
