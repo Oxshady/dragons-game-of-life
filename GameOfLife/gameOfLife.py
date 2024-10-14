@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import Canvas, colorchooser
+from tkinter import Canvas, colorchooser, messagebox
 import random
 import json
 import pygame
@@ -340,5 +340,18 @@ class GameOfLife:
         file_path = ctk.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
         if file_path:
             with open(file_path, "r") as file:
-                self.grid = json.load(file)
-            self.draw_grid()
+                loaded_grid = json.load(file)
+            
+            loaded_rows = len(loaded_grid)
+            loaded_cols = len(loaded_grid[0])
+            
+            if loaded_rows != self.rows or loaded_cols != self.cols:
+                error_message = f"Grid size mismatch!\nCurrent grid: {self.rows}x{self.cols}\nLoaded pattern: {loaded_rows}x{loaded_cols}"
+                messagebox.showerror("Error", error_message)
+                return
+            
+            self.grid = loaded_grid
+            self.alive_cells = sum(sum(row) for row in self.grid)
+            self.generation = 0
+            self.update_info_display()
+            self.update_canvas()
