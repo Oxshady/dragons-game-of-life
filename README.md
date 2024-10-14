@@ -26,7 +26,7 @@
 This project is an implementation of Conway's Game of Life, a cellular automaton devised by the mathematician John Conway. The application is built using Python and the Tkinter library, providing an interactive interface where users can visualize and interact with the game's mechanics.
 
 ## Live demo using ***CustomTkinter***
-https://github.com/user-attachments/assets/d4a7d55f-05c0-4954-87b5-8bded3080927
+https://github.com/user-attachments/assets/718ba3eb-1142-4a39-822e-0004f0a18ce4
 
 ## Live demo using ***Tkinter***
 https://github.com/user-attachments/assets/ba47420e-93e8-4cc9-aeb5-9bbcb99249cf
