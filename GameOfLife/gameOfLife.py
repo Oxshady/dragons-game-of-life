@@ -59,10 +59,12 @@ class GameOfLife:
         self.alive_color = 'black'
         self.dead_color = 'white'
 
-        self.alive_color_button = ctk.CTkButton(self.color_frame, text="Alive Color", command=self.choose_alive_color)
+        self.alive_color_button = ctk.CTkButton(self.color_frame, text="Alive Color", command=lambda: [self.choose_alive_color(), play_sound_in_thread("sound_effects/click2.wav")],
+                                                fg_color="#4CAF50", hover_color="#388E3C")
         self.alive_color_button.grid(row=0, column=0, padx=5)
 
-        self.dead_color_button = ctk.CTkButton(self.color_frame, text="Dead Color", command=self.choose_dead_color)
+        self.dead_color_button = ctk.CTkButton(self.color_frame, text="Dead Color", command=lambda: [self.choose_dead_color(), play_sound_in_thread("sound_effects/click2.wav")],
+                                               fg_color="#757575", hover_color="#616161")
         self.dead_color_button.grid(row=0, column=1, padx=5)
 
         self.boundary_condition = 'Finite'
@@ -71,22 +73,28 @@ class GameOfLife:
         self.boundary_combobox.set("Select Boundary")
         self.boundary_combobox.grid(row=1, column=0, padx=5)
 
-        self.toggle_button = ctk.CTkButton(self.color_frame, text="Start", command=self.toggle_game)
+        self.toggle_button = ctk.CTkButton(self.color_frame, text="Start", command=self.toggle_game,
+                                           fg_color="#388E3C", hover_color="#2E7D32")
         self.toggle_button.grid(row=0, column=2, padx=5)
 
-        self.clear_button = ctk.CTkButton(self.color_frame, text="Clear", command=lambda: [self.clear_grid(), play_sound_in_thread("sound_effects/reset.wav")])
+        self.clear_button = ctk.CTkButton(self.color_frame, text="Clear", command=lambda: [self.clear_grid(), play_sound_in_thread("sound_effects/reset.wav")],
+                                          fg_color="#FF7043", hover_color="#F4511E")
         self.clear_button.grid(row=0, column=3, padx=5)
 
-        self.randomize_button = ctk.CTkButton(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")])
+        self.randomize_button = ctk.CTkButton(self.color_frame, text="Randomize", command=lambda: [self.randomize_grid(), play_sound_in_thread("sound_effects/click2.wav")],
+                                              fg_color="#FFCA28", hover_color="#FBC02D", text_color="#000000")
         self.randomize_button.grid(row=0, column=4, padx=5)
 
-        self.lobby_button = ctk.CTkButton(self.color_frame, text="Lobby", command=self.return_to_lobby)
+        self.lobby_button = ctk.CTkButton(self.color_frame, text="Lobby", command=self.return_to_lobby,
+                                          fg_color="#607D8B", hover_color="#455A64")
         self.lobby_button.grid(row=0, column=5, padx=5)
 
-        save_button = ctk.CTkButton(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")])
+        save_button = ctk.CTkButton(self.color_frame, text="Save Pattern", command=lambda: [self.save_pattern(), play_sound_in_thread("sound_effects/click2.wav")],
+                                    fg_color="#1976D2", hover_color="#2196F3")
         save_button.grid(row=1, column=2, padx=5, pady=5)
 
-        load_button = ctk.CTkButton(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern(), play_sound_in_thread("sound_effects/click2.wav")])
+        load_button = ctk.CTkButton(self.color_frame, text="Load Pattern", command=lambda: [self.load_pattern(), play_sound_in_thread("sound_effects/click2.wav")],
+                                    fg_color="#607D8B", hover_color="#455A64")
         load_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.draw_grid()
