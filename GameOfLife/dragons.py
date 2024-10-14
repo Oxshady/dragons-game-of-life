@@ -15,8 +15,14 @@ class Dragons:
         self.settings = ctk.CTkFrame(self.root)
         self.game = ctk.CTkFrame(self.root)
         self.rules = ctk.CTkFrame(self.root)
-        self.game_frame = ctk.CTkFrame(self.game)
+
+        # Create a scrollable frame for the game page
+        self.game_scrollable_frame = ctk.CTkScrollableFrame(self.game)
+        self.game_scrollable_frame.pack(fill="both", expand=True)
+
+        self.game_frame = ctk.CTkFrame(self.game_scrollable_frame)
         self.game_frame.pack(fill="both", expand=True)
+
         self.frames_config()
         self.current_game = None
         self.current_mode = "dark"
@@ -255,6 +261,10 @@ class Dragons:
             self.change_mode(self.mode_var.get())
             if self.is_muted:
                 self.play_sound_in_thread("sound_effects/start_game2.mp3")
+            
+            # Update the scrollable frame size
+            self.game_scrollable_frame.configure(width=max(900, cols * self.current_game.cell_size + 40),
+                                                 height=max(700, rows * self.current_game.cell_size + 200))
         except ValueError:
             pass
 
@@ -269,6 +279,9 @@ class Dragons:
             self.pattern_library_created = True
         
         self.switch_frames(self.game)
+
+        # Update the scrollable frame size
+        self.game_scrollable_frame.configure(width=900, height=700)
 
 
     def create_pattern_library(self):
