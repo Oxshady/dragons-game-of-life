@@ -279,7 +279,7 @@ class Dragons:
         library_frame.place(relx=1.0, y=10, anchor="ne")
 
 
-        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=390)
+        scroll_frame = ctk.CTkScrollableFrame(library_frame, label_text="Pattern Library", width=200, height=200)
         scroll_frame.pack(expand=True, fill="both")
 
         patterns = {

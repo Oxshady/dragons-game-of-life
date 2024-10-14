@@ -220,10 +220,12 @@ class GameOfLife:
         if self.is_running:
             self.stop_game()
             self.toggle_button.configure(text="Start")
+            self.toggle_button.configure(fg_color="#388E3C", hover_color="#2E7D32")
             play_sound_in_thread("sound_effects/exit3.wav")
         else:
             self.start_game()
             self.toggle_button.configure(text="Pause")
+            self.toggle_button.configure(fg_color="#FF7043", hover_color="#F4511E")
             play_sound_in_thread("sound_effects/click2.wav")
 
     def start_game(self):
