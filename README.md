@@ -100,8 +100,9 @@ If you want to run the application locally on your terminal, follow these steps:
 
 ## Authors
 
-- **Karem Hany** - Backend Developer - [GitHub Profile](https://github.com/K-a-r-e-e-m)
-- **Shadi Mahmoud** - Backend Developer - [GitHub Profile](https://github.com/Oxshady)
-- **Youssef Ahmed** - Backend Developer - [GitHub Profile](https://github.com/youssef3092004)
-- **Ahmed Harhash** - backend Developer - [GitHub Profile](https://github.com/ah0048)
-- **Sayed Abdelaal** - Frontend Developer - [GitHub Profile](https://github.com/sayedabdelal)
+- **Karem Hany** - [GitHub Profile](https://github.com/K-a-r-e-e-m)
+- **Shadi Mahmoud** - [GitHub Profile](https://github.com/Oxshady)
+- **Youssef Ahmed** - [GitHub Profile](https://github.com/youssef3092004)
+- **Ahmed Harhash** - [GitHub Profile](https://github.com/ah0048)
+- **Sayed Abdelaal** - [GitHub Profile](https://github.com/sayedabdelal)
+- **Sondoss Essam** - [GitHub Profile](https://github.com/sondosEssam)
